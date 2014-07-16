@@ -105,8 +105,8 @@ kuka r16 bounds for each of the joints. Currently working on mesh collision with
 class SO26ValidityChecker : public ob::StateValidityChecker
 {
 	public:
-	    SO26ValidityChecker(const ob::SpaceInformationPtr &si, Ref<TriMesh> mesh):
-			ob::StateValidityChecker(si), mesh_(mesh), mesh_tree(mesh->face_tree())
+	    SO26ValidityChecker(const ob::SpaceInformationPtr &si, /*Ref<TriMesh> mesh,*/ vector<link_t> &nodes):
+			ob::StateValidityChecker(si), nodes_(nodes) /* mesh_(mesh), mesh_tree(mesh->face_tree()),*/
 	    {
 	    }
 	     
@@ -131,27 +131,28 @@ class SO26ValidityChecker : public ob::StateValidityChecker
 	3. Struct defining the axes of rotation, etc... 
 	4. What is this whole compound thing? 
 */
-		/*Vector<real, 3> effector_from_state(const vector<real>& joint_angles) {
-			vector<Frame<Vector<real,3>>> frames;
-
-			for(int i = 0; i < si_->getStateDimension(); ++i) {
-				Frame<Vector<real,3>> f = frames.size() > 0 ? frames.back() : Frame<Vector<real, 3>>();
-				frames.push_back(Frame<Vector<real,3>>(offsets[i], )
-			}		
-
-			Frame<TV> compound;
-  for(int i =0; i < 6; ++i){
-    compound = frames[i]*compound;
-  }	
-		}
-	*/
 	protected: 
-		Ref<TriMesh> mesh_ ;
-		Ref<SimplexTree<Vector<real,3>,2>> mesh_tree;
+		//Ref<TriMesh> mesh_ ;
+		//Ref<SimplexTree<Vector<real,3>,2>> mesh_tree;
+		vector<link_t> nodes_;
 
 };
 
-void initializeAxes(ob::SpaceInformationPtr &si, link_t (&nodes)[6], Array<Vector<real,3>> &offsets) {
+
+
+/*Vector<real, 3> effector_from_state(const vector<real>& joint_angles) {
+	
+	vector<Frame<Vector<real,3>>> frames;
+
+	for(int i = 0; i < si_->getStateDimension(); ++i) {
+			Frame<Vector<real,3>> f = frames.size() > 0 ? frames.back() : Frame<Vector<real, 3>>();
+			frames.push_back(Frame<Vector<real,3>>(offsets[i], )
+	}		
+
+	return frames;			
+}
+*/
+void initializeAxes(ob::SpaceInformationPtr &si, vector<link_t> &nodes, Array<Vector<real,3>> &offsets) {
 	
 	Vector<real, 3> x_axis(1,0,0);
 	Vector<real, 3> y_axis(0,1,0);
@@ -175,7 +176,7 @@ void initializeAxes(ob::SpaceInformationPtr &si, link_t (&nodes)[6], Array<Vecto
 		else 
 			this_node.negate_rotation = false;
 
-		nodes[i] = this_node;
+		nodes.push_back(this_node);
 	}
 }
 
@@ -189,8 +190,8 @@ bool this_isValid(ob::ScopedState<ob::CompoundStateSpace> state, const ob::Space
 	return true;
 }
 
-static Nested<real> plan(unsigned int links, double linkLength, Array<real> goalState, 
-	Ref<TriMesh> obstacleMesh, Array<Vector<real, 3>> parsed_offsets) {
+static Nested<real> plan(unsigned int links, double linkLength, Array<real> goalState, Array<Vector<real, 3>> parsed_offsets) {
+	/*Ref<TriMesh> obstacleMesh,*/
 	//Ref<TriMesh> obstacleMesh = linkLength;
 	//auto mesh_tree = mesh->face_tree();
 	//auto face_point = mesh_tree->closest_point("asdf");
@@ -202,7 +203,7 @@ static Nested<real> plan(unsigned int links, double linkLength, Array<real> goal
 
 	si->setStateValidityCheckingResolution(.0000001);
 
-	link_t nodes[6];
+	vector<link_t> nodes;
 
 	initializeAxes(si, nodes, parsed_offsets);
 
@@ -216,7 +217,7 @@ static Nested<real> plan(unsigned int links, double linkLength, Array<real> goal
 	}
 
 	//Eventually this will be where I do validity checking 
-	si->setStateValidityChecker(ob::StateValidityCheckerPtr(new SO26ValidityChecker(si, obstacleMesh)));
+	si->setStateValidityChecker(ob::StateValidityCheckerPtr(new SO26ValidityChecker(si, /*obstacleMesh,*/ nodes)));
 
 	//Code from the box: set up a problem, solve it. Resolution parameters are changed here. 
 	ob::ProblemDefinitionPtr pdef(new ob::ProblemDefinition(si));

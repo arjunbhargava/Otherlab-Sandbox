@@ -57,7 +57,7 @@ def view():
   goal = armset_dummy.update_effector();
   robot_origins = asarray(get_origins());
   if len(goal) == dimension:
-    angle_path = plan(6,1., goal, origins)
+    angle_path = plan(6,1., goal, robot_origins)
     props.get("last_frame").set(len(angle_path))
   
   main.resize_timeline(100);

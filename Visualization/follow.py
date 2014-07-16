@@ -77,11 +77,11 @@ class Arm(object):
     self.effector_functions = eff_functions
     for d in range(self.dof):
       self.axes.append(props.add(self.name+"axis%s"%d,0.))
-
+    this_origins = get_origins()
     t = array([0,0,0])
     for i in range(6):
-      o = array(origins[i]) - t
-      t = origins[i]
+      o = array(this_origins[i]) - t
+      t = this_origins[i]
       m = TriMesh()
       bf ='kr16/'
       m.read(bf+'axis%s.stl'%(i+1))
