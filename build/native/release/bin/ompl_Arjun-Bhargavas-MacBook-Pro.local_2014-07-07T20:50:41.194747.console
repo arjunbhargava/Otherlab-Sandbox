@@ -1,0 +1,425 @@
+Info:    Beginning benchmark
+Info:    No planner specified. Using default.
+Info:    LBKPIECE1: Attempting to use default projection.
+Debug:   LBKPIECE1: Planner range detected to be 3.769911
+Info:    Preparing for run 0 of geometric_STRIDE
+Info:    STRIDE: Starting with 1 states
+Info:    STRIDE: Created 202 states
+Info:    Path simplification took 0.003233 seconds
+Info:    Preparing for run 1 of geometric_STRIDE
+Info:    STRIDE: Starting with 1 states
+Info:    STRIDE: Created 522 states
+Info:    Path simplification took 0.001408 seconds
+Info:    Preparing for run 2 of geometric_STRIDE
+Info:    STRIDE: Starting with 1 states
+Info:    STRIDE: Created 64 states
+Info:    Path simplification took 0.001492 seconds
+Info:    Preparing for run 3 of geometric_STRIDE
+Info:    STRIDE: Starting with 1 states
+Info:    STRIDE: Created 213 states
+Info:    Path simplification took 0.001790 seconds
+Info:    Preparing for run 4 of geometric_STRIDE
+Info:    STRIDE: Starting with 1 states
+Info:    STRIDE: Created 124 states
+Info:    Path simplification took 0.001490 seconds
+Info:    Preparing for run 5 of geometric_STRIDE
+Info:    STRIDE: Starting with 1 states
+Info:    STRIDE: Created 225 states
+Info:    Path simplification took 0.002448 seconds
+Info:    Preparing for run 6 of geometric_STRIDE
+Info:    STRIDE: Starting with 1 states
+Info:    STRIDE: Created 352 states
+Info:    Path simplification took 0.001715 seconds
+Info:    Preparing for run 7 of geometric_STRIDE
+Info:    STRIDE: Starting with 1 states
+Info:    STRIDE: Created 403 states
+Info:    Path simplification took 0.002583 seconds
+Info:    Preparing for run 8 of geometric_STRIDE
+Info:    STRIDE: Starting with 1 states
+Info:    STRIDE: Created 267 states
+Info:    Path simplification took 0.002800 seconds
+Info:    Preparing for run 9 of geometric_STRIDE
+Info:    STRIDE: Starting with 1 states
+Info:    STRIDE: Created 655 states
+Info:    Path simplification took 0.002654 seconds
+Info:    Preparing for run 10 of geometric_STRIDE
+Info:    STRIDE: Starting with 1 states
+Info:    STRIDE: Created 183 states
+Info:    Path simplification took 0.002600 seconds
+Info:    Preparing for run 11 of geometric_STRIDE
+Info:    STRIDE: Starting with 1 states
+Info:    STRIDE: Created 312 states
+Info:    Path simplification took 0.002148 seconds
+Info:    Preparing for run 12 of geometric_STRIDE
+Info:    STRIDE: Starting with 1 states
+Info:    STRIDE: Created 428 states
+Debug:   The solution path was slightly touching on an invalid region of the state space, but it was successfully fixed.
+Info:    Path simplification took 0.003629 seconds
+Info:    Preparing for run 13 of geometric_STRIDE
+Info:    STRIDE: Starting with 1 states
+Info:    STRIDE: Created 58 states
+Info:    Path simplification took 0.002051 seconds
+Info:    Preparing for run 14 of geometric_STRIDE
+Info:    STRIDE: Starting with 1 states
+Info:    STRIDE: Created 152 states
+Debug:   The solution path was slightly touching on an invalid region of the state space, but it was successfully fixed.
+Info:    Path simplification took 0.002292 seconds
+Info:    Preparing for run 15 of geometric_STRIDE
+Info:    STRIDE: Starting with 1 states
+Info:    STRIDE: Created 424 states
+Info:    Path simplification took 0.002016 seconds
+Info:    Preparing for run 16 of geometric_STRIDE
+Info:    STRIDE: Starting with 1 states
+Info:    STRIDE: Created 178 states
+Info:    Path simplification took 0.001796 seconds
+Info:    Preparing for run 17 of geometric_STRIDE
+Info:    STRIDE: Starting with 1 states
+Info:    STRIDE: Created 310 states
+Info:    Path simplification took 0.001903 seconds
+Info:    Preparing for run 18 of geometric_STRIDE
+Info:    STRIDE: Starting with 1 states
+Info:    STRIDE: Created 209 states
+Info:    Path simplification took 0.002084 seconds
+Info:    Preparing for run 19 of geometric_STRIDE
+Info:    STRIDE: Starting with 1 states
+Info:    STRIDE: Created 384 states
+Info:    Path simplification took 0.001933 seconds
+Info:    Preparing for run 0 of geometric_EST
+Info:    EST: Starting with 1 states
+Info:    EST: Created 444 states in 131 cells
+Debug:   The solution path was slightly touching on an invalid region of the state space, but it was successfully fixed.
+Info:    Path simplification took 0.002081 seconds
+Info:    Preparing for run 1 of geometric_EST
+Info:    EST: Starting with 1 states
+Info:    EST: Created 1872 states in 295 cells
+Debug:   The solution path was slightly touching on an invalid region of the state space, but it was successfully fixed.
+Info:    Path simplification took 0.002101 seconds
+Info:    Preparing for run 2 of geometric_EST
+Info:    EST: Starting with 1 states
+Info:    EST: Created 1001 states in 211 cells
+Info:    Path simplification took 0.002843 seconds
+Info:    Preparing for run 3 of geometric_EST
+Info:    EST: Starting with 1 states
+Info:    EST: Created 1260 states in 242 cells
+Debug:   The solution path was slightly touching on an invalid region of the state space, but it was successfully fixed.
+Info:    Path simplification took 0.003086 seconds
+Info:    Preparing for run 4 of geometric_EST
+Info:    EST: Starting with 1 states
+Info:    EST: Created 627 states in 147 cells
+Info:    Path simplification took 0.001838 seconds
+Info:    Preparing for run 5 of geometric_EST
+Info:    EST: Starting with 1 states
+Info:    EST: Created 1744 states in 298 cells
+Info:    Path simplification took 0.001510 seconds
+Info:    Preparing for run 6 of geometric_EST
+Info:    EST: Starting with 1 states
+Info:    EST: Created 984 states in 223 cells
+Debug:   The solution path was slightly touching on an invalid region of the state space, but it was successfully fixed.
+Info:    Path simplification took 0.002333 seconds
+Info:    Preparing for run 7 of geometric_EST
+Info:    EST: Starting with 1 states
+Info:    EST: Created 574 states in 163 cells
+Warning: Solution path may slightly touch on an invalid region of the state space
+         at line 386 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/src/PathSimplifier.cpp
+Info:    Path simplification took 0.002577 seconds
+Info:    Preparing for run 8 of geometric_EST
+Info:    EST: Starting with 1 states
+Info:    EST: Created 928 states in 197 cells
+Debug:   The solution path was slightly touching on an invalid region of the state space, but it was successfully fixed.
+Info:    Path simplification took 0.004344 seconds
+Info:    Preparing for run 9 of geometric_EST
+Info:    EST: Starting with 1 states
+Info:    EST: Created 348 states in 111 cells
+Debug:   The solution path was slightly touching on an invalid region of the state space, but it was successfully fixed.
+Info:    Path simplification took 0.001878 seconds
+Info:    Preparing for run 10 of geometric_EST
+Info:    EST: Starting with 1 states
+Info:    EST: Created 932 states in 221 cells
+Info:    Path simplification took 0.002234 seconds
+Info:    Preparing for run 11 of geometric_EST
+Info:    EST: Starting with 1 states
+Info:    EST: Created 241 states in 73 cells
+Info:    Path simplification took 0.002954 seconds
+Info:    Preparing for run 12 of geometric_EST
+Info:    EST: Starting with 1 states
+Info:    EST: Created 615 states in 153 cells
+Debug:   The solution path was slightly touching on an invalid region of the state space, but it was successfully fixed.
+Info:    Path simplification took 0.001384 seconds
+Info:    Preparing for run 13 of geometric_EST
+Info:    EST: Starting with 1 states
+Info:    EST: Created 238 states in 88 cells
+Info:    Path simplification took 0.001719 seconds
+Info:    Preparing for run 14 of geometric_EST
+Info:    EST: Starting with 1 states
+Info:    EST: Created 751 states in 196 cells
+Info:    Path simplification took 0.002484 seconds
+Info:    Preparing for run 15 of geometric_EST
+Info:    EST: Starting with 1 states
+Info:    EST: Created 422 states in 131 cells
+Info:    Path simplification took 0.002135 seconds
+Info:    Preparing for run 16 of geometric_EST
+Info:    EST: Starting with 1 states
+Info:    EST: Created 592 states in 176 cells
+Info:    Path simplification took 0.001904 seconds
+Info:    Preparing for run 17 of geometric_EST
+Info:    EST: Starting with 1 states
+Info:    EST: Created 586 states in 151 cells
+Debug:   The solution path was slightly touching on an invalid region of the state space, but it was successfully fixed.
+Info:    Path simplification took 0.002161 seconds
+Info:    Preparing for run 18 of geometric_EST
+Info:    EST: Starting with 1 states
+Info:    EST: Created 231 states in 84 cells
+Info:    Path simplification took 0.001690 seconds
+Info:    Preparing for run 19 of geometric_EST
+Info:    EST: Starting with 1 states
+Info:    EST: Created 326 states in 117 cells
+Info:    Path simplification took 0.002349 seconds
+Info:    Preparing for run 0 of geometric_KPIECE1
+Info:    KPIECE1: Starting with 1 states
+Info:    KPIECE1: Created 251 states in 98 cells (36 internal + 62 external)
+Info:    Path simplification took 0.003873 seconds
+Info:    Preparing for run 1 of geometric_KPIECE1
+Info:    KPIECE1: Starting with 1 states
+Info:    KPIECE1: Created 563 states in 186 cells (78 internal + 108 external)
+Info:    Path simplification took 0.003017 seconds
+Info:    Preparing for run 2 of geometric_KPIECE1
+Info:    KPIECE1: Starting with 1 states
+Info:    KPIECE1: Created 65 states in 34 cells (5 internal + 29 external)
+Info:    Path simplification took 0.002686 seconds
+Info:    Preparing for run 3 of geometric_KPIECE1
+Info:    KPIECE1: Starting with 1 states
+Info:    KPIECE1: Created 119 states in 52 cells (11 internal + 41 external)
+Info:    Path simplification took 0.001946 seconds
+Info:    Preparing for run 4 of geometric_KPIECE1
+Info:    KPIECE1: Starting with 1 states
+Info:    KPIECE1: Created 40 states in 19 cells (2 internal + 17 external)
+Debug:   The solution path was slightly touching on an invalid region of the state space, but it was successfully fixed.
+Info:    Path simplification took 0.001522 seconds
+Info:    Preparing for run 5 of geometric_KPIECE1
+Info:    KPIECE1: Starting with 1 states
+Info:    KPIECE1: Created 95 states in 51 cells (3 internal + 48 external)
+Info:    Path simplification took 0.002659 seconds
+Info:    Preparing for run 6 of geometric_KPIECE1
+Info:    KPIECE1: Starting with 1 states
+Info:    KPIECE1: Created 656 states in 203 cells (100 internal + 103 external)
+Info:    Path simplification took 0.001912 seconds
+Info:    Preparing for run 7 of geometric_KPIECE1
+Info:    KPIECE1: Starting with 1 states
+Info:    KPIECE1: Created 128 states in 52 cells (12 internal + 40 external)
+Info:    Path simplification took 0.001668 seconds
+Info:    Preparing for run 8 of geometric_KPIECE1
+Info:    KPIECE1: Starting with 1 states
+Info:    KPIECE1: Created 341 states in 128 cells (42 internal + 86 external)
+Info:    Path simplification took 0.004340 seconds
+Info:    Preparing for run 9 of geometric_KPIECE1
+Info:    KPIECE1: Starting with 1 states
+Info:    KPIECE1: Created 171 states in 94 cells (13 internal + 81 external)
+Info:    Path simplification took 0.004111 seconds
+Info:    Preparing for run 10 of geometric_KPIECE1
+Info:    KPIECE1: Starting with 1 states
+Info:    KPIECE1: Created 437 states in 149 cells (65 internal + 84 external)
+Debug:   The solution path was slightly touching on an invalid region of the state space, but it was successfully fixed.
+Info:    Path simplification took 0.002920 seconds
+Info:    Preparing for run 11 of geometric_KPIECE1
+Info:    KPIECE1: Starting with 1 states
+Info:    KPIECE1: Created 102 states in 52 cells (10 internal + 42 external)
+Info:    Path simplification took 0.002132 seconds
+Info:    Preparing for run 12 of geometric_KPIECE1
+Info:    KPIECE1: Starting with 1 states
+Info:    KPIECE1: Created 540 states in 157 cells (72 internal + 85 external)
+Debug:   The solution path was slightly touching on an invalid region of the state space, but it was successfully fixed.
+Info:    Path simplification took 0.004473 seconds
+Info:    Preparing for run 13 of geometric_KPIECE1
+Info:    KPIECE1: Starting with 1 states
+Info:    KPIECE1: Created 318 states in 110 cells (34 internal + 76 external)
+Info:    Path simplification took 0.002213 seconds
+Info:    Preparing for run 14 of geometric_KPIECE1
+Info:    KPIECE1: Starting with 1 states
+Info:    KPIECE1: Created 323 states in 101 cells (42 internal + 59 external)
+Debug:   The solution path was slightly touching on an invalid region of the state space, but it was successfully fixed.
+Info:    Path simplification took 0.002752 seconds
+Info:    Preparing for run 15 of geometric_KPIECE1
+Info:    KPIECE1: Starting with 1 states
+Info:    KPIECE1: Created 331 states in 118 cells (55 internal + 63 external)
+Info:    Path simplification took 0.003738 seconds
+Info:    Preparing for run 16 of geometric_KPIECE1
+Info:    KPIECE1: Starting with 1 states
+Info:    KPIECE1: Created 484 states in 142 cells (93 internal + 49 external)
+Info:    Path simplification took 0.003051 seconds
+Info:    Preparing for run 17 of geometric_KPIECE1
+Info:    KPIECE1: Starting with 1 states
+Info:    KPIECE1: Created 181 states in 69 cells (22 internal + 47 external)
+Info:    Path simplification took 0.002398 seconds
+Info:    Preparing for run 18 of geometric_KPIECE1
+Info:    KPIECE1: Starting with 1 states
+Info:    KPIECE1: Created 137 states in 45 cells (14 internal + 31 external)
+Info:    Path simplification took 0.001554 seconds
+Info:    Preparing for run 19 of geometric_KPIECE1
+Info:    KPIECE1: Starting with 1 states
+Info:    KPIECE1: Created 1040 states in 284 cells (182 internal + 102 external)
+Info:    Path simplification took 0.002397 seconds
+Info:    Preparing for run 0 of geometric_RRT
+Info:    RRT: Starting with 1 states
+Info:    RRT: Created 10 states
+Info:    Path simplification took 0.002608 seconds
+Info:    Preparing for run 1 of geometric_RRT
+Info:    RRT: Starting with 1 states
+Info:    RRT: Created 10 states
+Info:    Path simplification took 0.001921 seconds
+Info:    Preparing for run 2 of geometric_RRT
+Info:    RRT: Starting with 1 states
+Info:    RRT: Created 3 states
+Info:    Path simplification took 0.000545 seconds
+Info:    Preparing for run 3 of geometric_RRT
+Info:    RRT: Starting with 1 states
+Info:    RRT: Created 17 states
+Info:    Path simplification took 0.001986 seconds
+Info:    Preparing for run 4 of geometric_RRT
+Info:    RRT: Starting with 1 states
+Info:    RRT: Created 13 states
+Info:    Path simplification took 0.002262 seconds
+Info:    Preparing for run 5 of geometric_RRT
+Info:    RRT: Starting with 1 states
+Info:    RRT: Created 6 states
+Info:    Path simplification took 0.002302 seconds
+Info:    Preparing for run 6 of geometric_RRT
+Info:    RRT: Starting with 1 states
+Info:    RRT: Created 5 states
+Info:    Path simplification took 0.001729 seconds
+Info:    Preparing for run 7 of geometric_RRT
+Info:    RRT: Starting with 1 states
+Info:    RRT: Created 8 states
+Info:    Path simplification took 0.002323 seconds
+Info:    Preparing for run 8 of geometric_RRT
+Info:    RRT: Starting with 1 states
+Info:    RRT: Created 6 states
+Info:    Path simplification took 0.002187 seconds
+Info:    Preparing for run 9 of geometric_RRT
+Info:    RRT: Starting with 1 states
+Info:    RRT: Created 4 states
+Info:    Path simplification took 0.001395 seconds
+Info:    Preparing for run 10 of geometric_RRT
+Info:    RRT: Starting with 1 states
+Info:    RRT: Created 6 states
+Info:    Path simplification took 0.001750 seconds
+Info:    Preparing for run 11 of geometric_RRT
+Info:    RRT: Starting with 1 states
+Info:    RRT: Created 9 states
+Info:    Path simplification took 0.002537 seconds
+Info:    Preparing for run 12 of geometric_RRT
+Info:    RRT: Starting with 1 states
+Info:    RRT: Created 11 states
+Info:    Path simplification took 0.002457 seconds
+Info:    Preparing for run 13 of geometric_RRT
+Info:    RRT: Starting with 1 states
+Info:    RRT: Created 20 states
+Info:    Path simplification took 0.002127 seconds
+Info:    Preparing for run 14 of geometric_RRT
+Info:    RRT: Starting with 1 states
+Info:    RRT: Created 4 states
+Debug:   The solution path was slightly touching on an invalid region of the state space, but it was successfully fixed.
+Info:    Path simplification took 0.002080 seconds
+Info:    Preparing for run 15 of geometric_RRT
+Info:    RRT: Starting with 1 states
+Info:    RRT: Created 6 states
+Info:    Path simplification took 0.001623 seconds
+Info:    Preparing for run 16 of geometric_RRT
+Info:    RRT: Starting with 1 states
+Info:    RRT: Created 18 states
+Info:    Path simplification took 0.002180 seconds
+Info:    Preparing for run 17 of geometric_RRT
+Info:    RRT: Starting with 1 states
+Info:    RRT: Created 12 states
+Info:    Path simplification took 0.001873 seconds
+Info:    Preparing for run 18 of geometric_RRT
+Info:    RRT: Starting with 1 states
+Info:    RRT: Created 6 states
+Info:    Path simplification took 0.001823 seconds
+Info:    Preparing for run 19 of geometric_RRT
+Info:    RRT: Starting with 1 states
+Info:    RRT: Created 11 states
+Debug:   The solution path was slightly touching on an invalid region of the state space, but it was successfully fixed.
+Info:    Path simplification took 0.002675 seconds
+Info:    Preparing for run 0 of geometric_PRM
+Info:    PRM: Starting with 2 states
+Info:    PRM: Created 93 states
+Info:    Path simplification took 0.002848 seconds
+Info:    Preparing for run 1 of geometric_PRM
+Info:    PRM: Starting with 2 states
+Info:    PRM: Created 54 states
+Info:    Path simplification took 0.003361 seconds
+Info:    Preparing for run 2 of geometric_PRM
+Info:    PRM: Starting with 2 states
+Info:    PRM: Created 80 states
+Info:    Path simplification took 0.002570 seconds
+Info:    Preparing for run 3 of geometric_PRM
+Info:    PRM: Starting with 2 states
+Info:    PRM: Created 19 states
+Info:    Path simplification took 0.003029 seconds
+Info:    Preparing for run 4 of geometric_PRM
+Info:    PRM: Starting with 2 states
+Info:    PRM: Created 24 states
+Info:    Path simplification took 0.002480 seconds
+Info:    Preparing for run 5 of geometric_PRM
+Info:    PRM: Starting with 2 states
+Info:    PRM: Created 25 states
+Info:    Path simplification took 0.003924 seconds
+Info:    Preparing for run 6 of geometric_PRM
+Info:    PRM: Starting with 2 states
+Info:    PRM: Created 42 states
+Info:    Path simplification took 0.003276 seconds
+Info:    Preparing for run 7 of geometric_PRM
+Info:    PRM: Starting with 2 states
+Info:    PRM: Created 14 states
+Info:    Path simplification took 0.002193 seconds
+Info:    Preparing for run 8 of geometric_PRM
+Info:    PRM: Starting with 2 states
+Info:    PRM: Created 11 states
+Info:    Path simplification took 0.001743 seconds
+Info:    Preparing for run 9 of geometric_PRM
+Info:    PRM: Starting with 2 states
+Info:    PRM: Created 58 states
+Debug:   The solution path was slightly touching on an invalid region of the state space, but it was successfully fixed.
+Info:    Path simplification took 0.002424 seconds
+Info:    Preparing for run 10 of geometric_PRM
+Info:    PRM: Starting with 2 states
+Info:    PRM: Created 41 states
+Debug:   The solution path was slightly touching on an invalid region of the state space, but it was successfully fixed.
+Info:    Path simplification took 0.003287 seconds
+Info:    Preparing for run 11 of geometric_PRM
+Info:    PRM: Starting with 2 states
+Info:    PRM: Created 25 states
+Info:    Path simplification took 0.004194 seconds
+Info:    Preparing for run 12 of geometric_PRM
+Info:    PRM: Starting with 2 states
+Info:    PRM: Created 79 states
+Info:    Path simplification took 0.002210 seconds
+Info:    Preparing for run 13 of geometric_PRM
+Info:    PRM: Starting with 2 states
+Info:    PRM: Created 58 states
+Info:    Path simplification took 0.002515 seconds
+Info:    Preparing for run 14 of geometric_PRM
+Info:    PRM: Starting with 2 states
+Info:    PRM: Created 29 states
+Info:    Path simplification took 0.002875 seconds
+Info:    Preparing for run 15 of geometric_PRM
+Info:    PRM: Starting with 2 states
+Info:    PRM: Created 93 states
+Info:    Path simplification took 0.001617 seconds
+Info:    Preparing for run 16 of geometric_PRM
+Info:    PRM: Starting with 2 states
+Info:    PRM: Created 101 states
+Info:    Path simplification took 0.002660 seconds
+Info:    Preparing for run 17 of geometric_PRM
+Info:    PRM: Starting with 2 states
+Info:    PRM: Created 85 states
+Info:    Path simplification took 0.002131 seconds
+Info:    Preparing for run 18 of geometric_PRM
+Info:    PRM: Starting with 2 states
+Info:    PRM: Created 31 states
+Info:    Path simplification took 0.002420 seconds
+Info:    Preparing for run 19 of geometric_PRM
+Info:    PRM: Starting with 2 states
+Info:    PRM: Created 71 states
+Info:    Path simplification took 0.003113 seconds
+Info:    Benchmark complete

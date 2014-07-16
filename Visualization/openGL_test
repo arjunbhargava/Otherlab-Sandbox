@@ -1,0 +1,100 @@
+#!/usr/bin/env python
+
+from __future__ import division
+import sys
+import math
+from gui import *
+from geode.value import parser, PropManager
+from geode import *
+
+from geode.openmesh import *
+from geode.random import *
+
+from OpenGL import GL, GLUT
+from numpy import *
+
+from props import props
+from follow import *
+
+num_pts = props.add("num_pts",10)
+
+armset1 = System([Arm('a1',6,effector_functions)])
+armset2 = System([Arm('a2',6,effector_functions)])
+
+for arm in armset1.arms:
+  for node in arm.nodes:
+    node.rotation.set(1.)
+
+@cache
+def angle_generation():
+  f = open('/Users/Arjun/Desktop/Otherlab/sandbox/build/native/release/bin/Solution_path.txt', 'r');
+  n = f.read();
+  n = n.split('#')
+  n = n[1:];
+  
+  angle_array = array([]);
+  for i in range(0, len(n)):
+    m = n[i].split(' ')
+    angle_array.append(m[0:len(m)-1])
+  return angle_array;
+
+# class CustomScene(Scene):
+#   def render(self,*args):
+#     GL.glColor3f(1,0,1)
+#     GL.glBegin(GL.GL_LINE_STRIP)
+#     for pt in pts():
+#       GL.glVertex3f(pt[0],pt[1],pt[2])
+#     GL.glEnd()
+
+#   def bounding_box(self):
+#     b = Box3d((-10,-10,-10),(10,10,10))
+#     return b
+mylist=[[0,1,2,3,4,5],[2,3,4,5,6,7]]
+
+#mylist2 = [[20,21,22,23,24,25],[22,23,24,25,26,27]]
+
+def update():
+  frame = props.get("frame")()
+  for arm in armset1.arms:
+    for i,node in enumerate(arm.nodes):
+      node.rotation.set(mylist[int(frame)][i])
+
+  for arm in armset2.arms:
+    for i, node in enumerate(arm.nodes):
+      node.rotation.set(mylist2[int(frame)[i]]);
+  #print "update function for frame %s"%props.get("frame")()
+
+
+def view():
+  # Set up main window
+  app = QEApp(sys.argv,True)
+  main = MainWindow(props)
+
+  #We're going to add some windows
+  ks = KukaScene(armset1)
+  main.view.add_scene("kuka",ks)
+  main.view.show_all(True)
+
+  #add a secondary window
+  kukaview = main.add_view("kuka")
+  kukaview.show_all(True)
+
+  #if you want they can be different ones.
+  bs = KukaScene(armset2)
+  kukaview.add_scene("kukabot",bs)
+ 
+ #Turn on the listener for props.get("frame"), then calls update (timeline updating)
+  l = listen(props.get("frame"),update)
+ 
+  # Launch
+  main.init()
+  app.run()
+
+
+def main():
+  #Pulls the properties for props
+  parser.parse(props,'visualizer')
+  view()
+
+if __name__=='__main__':
+  main()

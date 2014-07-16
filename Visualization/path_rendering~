@@ -1,0 +1,73 @@
+#!/usr/bin/env python
+from __future__ import division
+import sys
+import math
+from gui import *
+from geode.value import parser, PropManager
+from geode import *
+from geode.openmesh import *
+from geode.random import *
+from OpenGL import GL, GLUT
+from numpy import *
+from props import props
+from follow import *
+
+from projects import *
+
+armset1 = System([Arm('a1',6,effector_functions)])
+#armset2 = System([Arm('a2',6,effector_functions)])
+
+angle_path = [];
+
+def angle_generation():
+  f = open('/Users/Arjun/Desktop/Otherlab/sandbox/build/native/release/bin/Solution_path.txt', 'r');
+  n = f.read();
+  n = n.split('#')
+  n = n[1:];
+  
+  angle_array = [];
+  for i in range(0, len(n)):
+    m = n[i].split(' ')
+    angle_array.append(m[0:len(m)-1])
+  return angle_array;
+
+def update():
+  frame = props.get("frame")()
+  angle_path = angle_generation()
+  state = angle_path[int(frame)]
+  armset1.update_effector()
+#  for arm in armset1.arms:
+ #   for i, node in enumerate(arm.nodes):
+#      node.rotation.set(float(state[i]) * 180/pi)
+
+def view():
+  # Set up main window
+  app = QEApp(sys.argv,True)
+  main = MainWindow(props)
+  #We're going to add some windows
+  ks = KukaScene(armset1)
+  main.view.add_scene("kuka",ks)
+  main.view.show_all(True)
+
+  main.resize_timeline(100)
+
+  #add a secondary window
+  #kukaview = main.add_view("kuka")
+ #Turn on the listener for props.get("frame"), then calls update (timeline updating)
+  l = listen(props.get("frame"),update)
+
+  
+ 
+  # Launch
+  main.init()
+  app.run()
+
+def main():
+  #Pulls the properties for props
+  parser.parse(props,'visualizer')
+  #angle_path = angle_generation();
+  view()
+  p = plan(1,.1)
+  print p
+if __name__=='__main__':
+  main()

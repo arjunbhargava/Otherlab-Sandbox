@@ -1,0 +1,8 @@
+setup.py
+kinematic_chain/__init__.py
+kinematic_chain/config.py
+kinematic_chain/other_ompl.so
+ompl_planning.egg-info/PKG-INFO
+ompl_planning.egg-info/SOURCES.txt
+ompl_planning.egg-info/dependency_links.txt
+ompl_planning.egg-info/top_level.txt

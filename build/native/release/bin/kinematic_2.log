@@ -1,0 +1,288 @@
+Experiment KinematicChain
+Running on Arjun-Bhargavas-MacBook-Pro.local
+Starting at 2014-07-07T20:50:07.775407
+<<<|
+Properties of the state space 'CompoundSpace1'
+  - signature: 6 0 2 2 1 2 1 
+  - dimension: 2
+  - extent: 6.28319
+
+  - SANITY CHECKS FOR STATE SPACE ***DID NOT PASS*** (Interpolation to midpoint state does not lead to distances that satisfy the triangle inequality (0.77832308786144777 difference))
+
+  - probability of valid states: 0.838
+  - average length of a valid motion: 1.23566
+  - average number of samples drawn per second: sampleUniform()=1.5873e+07 sampleUniformNear()=7.46269e+06 sampleGaussian()=3.40136e+06
+Settings for the state space 'CompoundSpace1'
+  - state validity check resolution: 1%
+  - valid segment count factor: 1
+  - state space:
+Compound state space 'CompoundSpace1' of dimension 2 (locked) [
+SO2 state space 'SO2Space2'
+ of weight 1
+SO2 state space 'SO2Space3'
+ of weight 1
+]
+Registered projections:
+  - <default>
+Projection of dimension 2
+Cell sizes (inferred by sampling): [0.418229 0.374728]
+
+Declared parameters:
+longest_valid_segment_fraction = 0.01
+projection.cellsize.0 = 0.41822932379731392
+projection.cellsize.1 = 0.37472834150084711
+projection.cellsize_factor = 
+valid_segment_count_factor = 1
+Valid state sampler named uniform with parameters:
+nr_attempts = 100
+Start states:
+Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+Goal state, threshold = 2.22045e-16, memory address = 0x7f8443409440, state = 
+Compound state [
+SO2State [3.14059]
+SO2State [0]
+]
+There are 0 solutions
+
+Properties of benchmarked planners:
+Planner STRIDE specs:
+Multithreaded:                 No
+Reports approximate solutions: Yes
+Can optimize solutions:        No
+Aware of the following parameters: degree estimated_dimension goal_bias max_degree max_pts_per_leaf min_degree min_valid_path_fraction range use_projected_distance
+Planner EST specs:
+Multithreaded:                 No
+Reports approximate solutions: Yes
+Can optimize solutions:        No
+Aware of the following parameters: goal_bias range
+Planner KPIECE1 specs:
+Multithreaded:                 No
+Reports approximate solutions: Yes
+Can optimize solutions:        No
+Aware of the following parameters: border_fraction failed_expansion_score_factor goal_bias min_valid_path_fraction range
+Planner RRT specs:
+Multithreaded:                 No
+Reports approximate solutions: Yes
+Can optimize solutions:        No
+Aware of the following parameters: goal_bias range
+Planner PRM specs:
+Multithreaded:                 No
+Reports approximate solutions: Yes
+Can optimize solutions:        Yes
+Aware of the following parameters: max_nearest_neighbors
+|>>>
+2569559073 is the random seed
+7200 seconds per run
+1024 MB per run
+20 runs per planner
+0.1123 seconds spent to collect the data
+1 enum type
+status|Unknown status|Invalid start|Invalid goal|Unrecognized goal type|Timeout|Approximate solution|Exact solution|Crash
+5 planners
+geometric_STRIDE
+14 common properties
+degree = 16
+estimated_dimension = 2
+goal_bias = 0.050000000000000003
+longest_valid_segment_fraction = 0.01
+max_degree = 18
+max_pts_per_leaf = 6
+min_degree = 12
+min_valid_path_fraction = 0.20000000000000001
+projection.cellsize.0 = 0.41822932379731392
+projection.cellsize.1 = 0.37472834150084711
+projection.cellsize_factor = 
+range = 1.2566370614359172
+use_projected_distance = 0
+valid_segment_count_factor = 1
+7 properties for each run
+graph motions INTEGER
+graph states INTEGER
+memory REAL
+solved BOOLEAN
+status ENUM
+time REAL
+valid segment fraction REAL
+20 runs
+0; 0; 0.09375; 0; 1; 0.001286; 0; 
+0; 0; 0.125; 0; 1; 0.001245; 0; 
+0; 0; 0.125; 0; 1; 0.00012; 0; 
+0; 0; 0.125; 0; 1; 0.0012030000000000001; 0; 
+0; 0; 0.125; 0; 1; 0.0012260000000000001; 0; 
+0; 0; 0.125; 0; 1; 0.0012030000000000001; 0; 
+0; 0; 0.125; 0; 1; 0.000144; 0; 
+0; 0; 0.125; 0; 1; 0.001196; 0; 
+0; 0; 0.125; 0; 1; 0.00018100000000000001; 0; 
+0; 0; 0.1328125; 0; 1; 0.00049600000000000002; 0; 
+0; 0; 0.1328125; 0; 1; 0.00010900000000000001; 0; 
+0; 0; 0.1328125; 0; 1; 9.7999999999999997e-05; 0; 
+0; 0; 0.1328125; 0; 1; 0.000102; 0; 
+0; 0; 0.1328125; 0; 1; 9.7e-05; 0; 
+0; 0; 0.1328125; 0; 1; 0.000102; 0; 
+0; 0; 0.1328125; 0; 1; 0.0013079999999999999; 0; 
+0; 0; 0.1328125; 0; 1; 0.000117; 0; 
+0; 0; 0.140625; 0; 1; 0.001232; 0; 
+0; 0; 0.140625; 0; 1; 0.00010900000000000001; 0; 
+0; 0; 0.140625; 0; 1; 0.001189; 0; 
+.
+geometric_EST
+7 common properties
+goal_bias = 0.050000000000000003
+longest_valid_segment_fraction = 0.01
+projection.cellsize.0 = 0.41822932379731392
+projection.cellsize.1 = 0.37472834150084711
+projection.cellsize_factor = 
+range = 1.2566370614359172
+valid_segment_count_factor = 1
+7 properties for each run
+graph motions INTEGER
+graph states INTEGER
+memory REAL
+solved BOOLEAN
+status ENUM
+time REAL
+valid segment fraction REAL
+20 runs
+0; 0; 0.14453125; 0; 1; 0.00010399999999999999; 0; 
+0; 0; 0.14453125; 0; 1; 8.8999999999999995e-05; 0; 
+0; 0; 0.14453125; 0; 1; 0.000107; 0; 
+0; 0; 0.14453125; 0; 1; 9.5000000000000005e-05; 0; 
+0; 0; 0.14453125; 0; 1; 0.000105; 0; 
+0; 0; 0.14453125; 0; 1; 9.0000000000000006e-05; 0; 
+0; 0; 0.14453125; 0; 1; 9.8999999999999994e-05; 0; 
+0; 0; 0.14453125; 0; 1; 9.1000000000000003e-05; 0; 
+0; 0; 0.14453125; 0; 1; 0.0001; 0; 
+0; 0; 0.15234375; 0; 1; 9.3999999999999994e-05; 0; 
+0; 0; 0.15234375; 0; 1; 9.6000000000000002e-05; 0; 
+0; 0; 0.15234375; 0; 1; 8.7999999999999998e-05; 0; 
+0; 0; 0.15234375; 0; 1; 0.000121; 0; 
+0; 0; 0.15234375; 0; 1; 9.0000000000000006e-05; 0; 
+0; 0; 0.15234375; 0; 1; 9.7999999999999997e-05; 0; 
+0; 0; 0.15234375; 0; 1; 0.0011999999999999999; 0; 
+0; 0; 0.15234375; 0; 1; 0.00011; 0; 
+0; 0; 0.16015625; 0; 1; 9.3999999999999994e-05; 0; 
+0; 0; 0.16015625; 0; 1; 9.2999999999999997e-05; 0; 
+0; 0; 0.16015625; 0; 1; 8.8999999999999995e-05; 0; 
+.
+geometric_KPIECE1
+10 common properties
+border_fraction = 0.90000000000000002
+failed_expansion_score_factor = 0.5
+goal_bias = 0.050000000000000003
+longest_valid_segment_fraction = 0.01
+min_valid_path_fraction = 0.20000000000000001
+projection.cellsize.0 = 0.41822932379731392
+projection.cellsize.1 = 0.37472834150084711
+projection.cellsize_factor = 
+range = 1.2566370614359172
+valid_segment_count_factor = 1
+7 properties for each run
+graph motions INTEGER
+graph states INTEGER
+memory REAL
+solved BOOLEAN
+status ENUM
+time REAL
+valid segment fraction REAL
+20 runs
+0; 0; 0.1640625; 0; 1; 9.8999999999999994e-05; 0; 
+0; 0; 0.1640625; 0; 1; 0.00013200000000000001; 0; 
+0; 0; 0.1640625; 0; 1; 0.0001; 0; 
+0; 0; 0.1640625; 0; 1; 0.000117; 0; 
+0; 0; 0.1640625; 0; 1; 9.7e-05; 0; 
+0; 0; 0.1640625; 0; 1; 9.0000000000000006e-05; 0; 
+0; 0; 0.1640625; 0; 1; 0.00027799999999999998; 0; 
+0; 0; 0.1640625; 0; 1; 0.000101; 0; 
+0; 0; 0.1640625; 0; 1; 9.7e-05; 0; 
+0; 0; 0.16796875; 0; 1; 9.2e-05; 0; 
+0; 0; 0.16796875; 0; 1; 9.8999999999999994e-05; 0; 
+0; 0; 0.16796875; 0; 1; 9.1000000000000003e-05; 0; 
+0; 0; 0.16796875; 0; 1; 0.00012400000000000001; 0; 
+0; 0; 0.16796875; 0; 1; 9.1000000000000003e-05; 0; 
+0; 0; 0.16796875; 0; 1; 9.7e-05; 0; 
+0; 0; 0.16796875; 0; 1; 9.1000000000000003e-05; 0; 
+0; 0; 0.16796875; 0; 1; 9.6000000000000002e-05; 0; 
+0; 0; 0.17578125; 0; 1; 0.00010900000000000001; 0; 
+0; 0; 0.17578125; 0; 1; 9.0000000000000006e-05; 0; 
+0; 0; 0.17578125; 0; 1; 8.8999999999999995e-05; 0; 
+.
+geometric_RRT
+7 common properties
+goal_bias = 0.050000000000000003
+longest_valid_segment_fraction = 0.01
+projection.cellsize.0 = 0.41822932379731392
+projection.cellsize.1 = 0.37472834150084711
+projection.cellsize_factor = 
+range = 1.2566370614359172
+valid_segment_count_factor = 1
+7 properties for each run
+graph motions INTEGER
+graph states INTEGER
+memory REAL
+solved BOOLEAN
+status ENUM
+time REAL
+valid segment fraction REAL
+20 runs
+0; 0; 0.18359375; 0; 1; 0.000146; 0; 
+0; 0; 0.18359375; 0; 1; 0.001217; 0; 
+0; 0; 0.18359375; 0; 1; 0.00011900000000000001; 0; 
+0; 0; 0.18359375; 0; 1; 0.0012179999999999999; 0; 
+0; 0; 0.18359375; 0; 1; 0.000106; 0; 
+0; 0; 0.18359375; 0; 1; 8.8999999999999995e-05; 0; 
+0; 0; 0.18359375; 0; 1; 9.1000000000000003e-05; 0; 
+0; 0; 0.18359375; 0; 1; 9.7e-05; 0; 
+0; 0; 0.18359375; 0; 1; 9.2999999999999997e-05; 0; 
+0; 0; 0.18359375; 0; 1; 0.0015269999999999999; 0; 
+0; 0; 0.18359375; 0; 1; 0.00012400000000000001; 0; 
+0; 0; 0.18359375; 0; 1; 0.0011670000000000001; 0; 
+0; 0; 0.18359375; 0; 1; 9.7e-05; 0; 
+0; 0; 0.18359375; 0; 1; 8.7999999999999998e-05; 0; 
+0; 0; 0.18359375; 0; 1; 0.00010399999999999999; 0; 
+0; 0; 0.18359375; 0; 1; 0.0011670000000000001; 0; 
+0; 0; 0.18359375; 0; 1; 8.6000000000000003e-05; 0; 
+0; 0; 0.1875; 0; 1; 0.0011900000000000001; 0; 
+0; 0; 0.1875; 0; 1; 9.7e-05; 0; 
+0; 0; 0.1875; 0; 1; 0.001382; 0; 
+.
+geometric_PRM
+6 common properties
+longest_valid_segment_fraction = 0.01
+max_nearest_neighbors = 
+projection.cellsize.0 = 0.41822932379731392
+projection.cellsize.1 = 0.37472834150084711
+projection.cellsize_factor = 
+valid_segment_count_factor = 1
+7 properties for each run
+graph motions INTEGER
+graph states INTEGER
+memory REAL
+solved BOOLEAN
+status ENUM
+time REAL
+valid segment fraction REAL
+20 runs
+0; 0; 0.19921875; 0; 1; 0.00012999999999999999; 0; 
+0; 0; 0.20703125; 0; 1; 0.00114; 0; 
+0; 0; 0.20703125; 0; 1; 9.6000000000000002e-05; 0; 
+0; 0; 0.20703125; 0; 1; 0.001193; 0; 
+0; 0; 0.20703125; 0; 1; 9.2999999999999997e-05; 0; 
+0; 0; 0.20703125; 0; 1; 0.0011509999999999999; 0; 
+0; 0; 0.20703125; 0; 1; 9.2e-05; 0; 
+0; 0; 0.20703125; 0; 1; 0.0012049999999999999; 0; 
+0; 0; 0.20703125; 0; 1; 0.000122; 0; 
+0; 0; 0.20703125; 0; 1; 0.001201; 0; 
+0; 0; 0.20703125; 0; 1; 9.2999999999999997e-05; 0; 
+0; 0; 0.20703125; 0; 1; 0.001194; 0; 
+0; 0; 0.20703125; 0; 1; 9.1000000000000003e-05; 0; 
+0; 0; 0.20703125; 0; 1; 0.001206; 0; 
+0; 0; 0.20703125; 0; 1; 9.0000000000000006e-05; 0; 
+0; 0; 0.20703125; 0; 1; 0.001238; 0; 
+0; 0; 0.20703125; 0; 1; 8.7999999999999998e-05; 0; 
+0; 0; 0.21484375; 0; 1; 0.001191; 0; 
+0; 0; 0.21484375; 0; 1; 9.2999999999999997e-05; 0; 
+0; 0; 0.21484375; 0; 1; 0.0012030000000000001; 0; 
+.

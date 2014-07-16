@@ -1,0 +1,11 @@
+Import('env program external library')
+
+external(env,'geode',default=1,required=1,libs=['geode'],headers=['geode/utility/config.h'])
+external(env,'ompl',publiclibs=['ompl'],headers=['ompl/config.h'])
+
+env = env.Clone(need_ompl=1, need_boost_link = 1)
+env.Append(CXXFLAGS='-Wno-unused-variable')
+library(env,'other_ompl',[]) 
+
+#program(env,'TestFile','projects/6dKinematicChain.cpp')
+#program(env, 'KinematicChain', 'demos/KinematicChainBenchmark.cpp')

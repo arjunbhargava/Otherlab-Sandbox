@@ -1,0 +1,1005 @@
+Info:    Beginning benchmark
+Info:    No planner specified. Using default.
+Info:    LBKPIECE1: Attempting to use default projection.
+Debug:   LBKPIECE1: Planner range detected to be 1.256637
+Info:    Preparing for run 0 of geometric_STRIDE
+Warning: STRIDE: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   STRIDE: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   STRIDE: There are no valid initial states!
+         at line 134 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/stride/src/STRIDE.cpp
+Info:    Preparing for run 1 of geometric_STRIDE
+Warning: STRIDE: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   STRIDE: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   STRIDE: There are no valid initial states!
+         at line 134 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/stride/src/STRIDE.cpp
+Info:    Preparing for run 2 of geometric_STRIDE
+Warning: STRIDE: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   STRIDE: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   STRIDE: There are no valid initial states!
+         at line 134 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/stride/src/STRIDE.cpp
+Info:    Preparing for run 3 of geometric_STRIDE
+Warning: STRIDE: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   STRIDE: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   STRIDE: There are no valid initial states!
+         at line 134 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/stride/src/STRIDE.cpp
+Info:    Preparing for run 4 of geometric_STRIDE
+Warning: STRIDE: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   STRIDE: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   STRIDE: There are no valid initial states!
+         at line 134 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/stride/src/STRIDE.cpp
+Info:    Preparing for run 5 of geometric_STRIDE
+Warning: STRIDE: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   STRIDE: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   STRIDE: There are no valid initial states!
+         at line 134 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/stride/src/STRIDE.cpp
+Info:    Preparing for run 6 of geometric_STRIDE
+Warning: STRIDE: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   STRIDE: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   STRIDE: There are no valid initial states!
+         at line 134 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/stride/src/STRIDE.cpp
+Info:    Preparing for run 7 of geometric_STRIDE
+Warning: STRIDE: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   STRIDE: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   STRIDE: There are no valid initial states!
+         at line 134 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/stride/src/STRIDE.cpp
+Info:    Preparing for run 8 of geometric_STRIDE
+Warning: STRIDE: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   STRIDE: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   STRIDE: There are no valid initial states!
+         at line 134 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/stride/src/STRIDE.cpp
+Info:    Preparing for run 9 of geometric_STRIDE
+Warning: STRIDE: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   STRIDE: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   STRIDE: There are no valid initial states!
+         at line 134 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/stride/src/STRIDE.cpp
+Info:    Preparing for run 10 of geometric_STRIDE
+Warning: STRIDE: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   STRIDE: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   STRIDE: There are no valid initial states!
+         at line 134 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/stride/src/STRIDE.cpp
+Info:    Preparing for run 11 of geometric_STRIDE
+Warning: STRIDE: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   STRIDE: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   STRIDE: There are no valid initial states!
+         at line 134 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/stride/src/STRIDE.cpp
+Info:    Preparing for run 12 of geometric_STRIDE
+Warning: STRIDE: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   STRIDE: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   STRIDE: There are no valid initial states!
+         at line 134 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/stride/src/STRIDE.cpp
+Info:    Preparing for run 13 of geometric_STRIDE
+Warning: STRIDE: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   STRIDE: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   STRIDE: There are no valid initial states!
+         at line 134 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/stride/src/STRIDE.cpp
+Info:    Preparing for run 14 of geometric_STRIDE
+Warning: STRIDE: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   STRIDE: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   STRIDE: There are no valid initial states!
+         at line 134 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/stride/src/STRIDE.cpp
+Info:    Preparing for run 15 of geometric_STRIDE
+Warning: STRIDE: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   STRIDE: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   STRIDE: There are no valid initial states!
+         at line 134 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/stride/src/STRIDE.cpp
+Info:    Preparing for run 16 of geometric_STRIDE
+Warning: STRIDE: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   STRIDE: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   STRIDE: There are no valid initial states!
+         at line 134 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/stride/src/STRIDE.cpp
+Info:    Preparing for run 17 of geometric_STRIDE
+Warning: STRIDE: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   STRIDE: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   STRIDE: There are no valid initial states!
+         at line 134 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/stride/src/STRIDE.cpp
+Info:    Preparing for run 18 of geometric_STRIDE
+Warning: STRIDE: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   STRIDE: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   STRIDE: There are no valid initial states!
+         at line 134 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/stride/src/STRIDE.cpp
+Info:    Preparing for run 19 of geometric_STRIDE
+Warning: STRIDE: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   STRIDE: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   STRIDE: There are no valid initial states!
+         at line 134 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/stride/src/STRIDE.cpp
+Info:    Preparing for run 0 of geometric_EST
+Warning: EST: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   EST: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   EST: There are no valid initial states!
+         at line 109 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/est/src/EST.cpp
+Info:    Preparing for run 1 of geometric_EST
+Warning: EST: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   EST: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   EST: There are no valid initial states!
+         at line 109 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/est/src/EST.cpp
+Info:    Preparing for run 2 of geometric_EST
+Warning: EST: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   EST: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   EST: There are no valid initial states!
+         at line 109 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/est/src/EST.cpp
+Info:    Preparing for run 3 of geometric_EST
+Warning: EST: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   EST: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   EST: There are no valid initial states!
+         at line 109 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/est/src/EST.cpp
+Info:    Preparing for run 4 of geometric_EST
+Warning: EST: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   EST: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   EST: There are no valid initial states!
+         at line 109 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/est/src/EST.cpp
+Info:    Preparing for run 5 of geometric_EST
+Warning: EST: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   EST: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   EST: There are no valid initial states!
+         at line 109 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/est/src/EST.cpp
+Info:    Preparing for run 6 of geometric_EST
+Warning: EST: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   EST: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   EST: There are no valid initial states!
+         at line 109 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/est/src/EST.cpp
+Info:    Preparing for run 7 of geometric_EST
+Warning: EST: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   EST: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   EST: There are no valid initial states!
+         at line 109 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/est/src/EST.cpp
+Info:    Preparing for run 8 of geometric_EST
+Warning: EST: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   EST: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   EST: There are no valid initial states!
+         at line 109 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/est/src/EST.cpp
+Info:    Preparing for run 9 of geometric_EST
+Warning: EST: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   EST: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   EST: There are no valid initial states!
+         at line 109 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/est/src/EST.cpp
+Info:    Preparing for run 10 of geometric_EST
+Warning: EST: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   EST: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   EST: There are no valid initial states!
+         at line 109 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/est/src/EST.cpp
+Info:    Preparing for run 11 of geometric_EST
+Warning: EST: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   EST: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   EST: There are no valid initial states!
+         at line 109 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/est/src/EST.cpp
+Info:    Preparing for run 12 of geometric_EST
+Warning: EST: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   EST: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   EST: There are no valid initial states!
+         at line 109 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/est/src/EST.cpp
+Info:    Preparing for run 13 of geometric_EST
+Warning: EST: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   EST: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   EST: There are no valid initial states!
+         at line 109 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/est/src/EST.cpp
+Info:    Preparing for run 14 of geometric_EST
+Warning: EST: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   EST: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   EST: There are no valid initial states!
+         at line 109 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/est/src/EST.cpp
+Info:    Preparing for run 15 of geometric_EST
+Warning: EST: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   EST: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   EST: There are no valid initial states!
+         at line 109 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/est/src/EST.cpp
+Info:    Preparing for run 16 of geometric_EST
+Warning: EST: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   EST: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   EST: There are no valid initial states!
+         at line 109 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/est/src/EST.cpp
+Info:    Preparing for run 17 of geometric_EST
+Warning: EST: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   EST: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   EST: There are no valid initial states!
+         at line 109 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/est/src/EST.cpp
+Info:    Preparing for run 18 of geometric_EST
+Warning: EST: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   EST: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   EST: There are no valid initial states!
+         at line 109 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/est/src/EST.cpp
+Info:    Preparing for run 19 of geometric_EST
+Warning: EST: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   EST: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   EST: There are no valid initial states!
+         at line 109 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/est/src/EST.cpp
+Info:    Preparing for run 0 of geometric_KPIECE1
+Warning: KPIECE1: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   KPIECE1: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   KPIECE1: There are no valid initial states!
+         at line 114 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/kpiece/src/KPIECE1.cpp
+Info:    Preparing for run 1 of geometric_KPIECE1
+Warning: KPIECE1: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   KPIECE1: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   KPIECE1: There are no valid initial states!
+         at line 114 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/kpiece/src/KPIECE1.cpp
+Info:    Preparing for run 2 of geometric_KPIECE1
+Warning: KPIECE1: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   KPIECE1: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   KPIECE1: There are no valid initial states!
+         at line 114 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/kpiece/src/KPIECE1.cpp
+Info:    Preparing for run 3 of geometric_KPIECE1
+Warning: KPIECE1: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   KPIECE1: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   KPIECE1: There are no valid initial states!
+         at line 114 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/kpiece/src/KPIECE1.cpp
+Info:    Preparing for run 4 of geometric_KPIECE1
+Warning: KPIECE1: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   KPIECE1: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   KPIECE1: There are no valid initial states!
+         at line 114 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/kpiece/src/KPIECE1.cpp
+Info:    Preparing for run 5 of geometric_KPIECE1
+Warning: KPIECE1: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   KPIECE1: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   KPIECE1: There are no valid initial states!
+         at line 114 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/kpiece/src/KPIECE1.cpp
+Info:    Preparing for run 6 of geometric_KPIECE1
+Warning: KPIECE1: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   KPIECE1: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   KPIECE1: There are no valid initial states!
+         at line 114 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/kpiece/src/KPIECE1.cpp
+Info:    Preparing for run 7 of geometric_KPIECE1
+Warning: KPIECE1: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   KPIECE1: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   KPIECE1: There are no valid initial states!
+         at line 114 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/kpiece/src/KPIECE1.cpp
+Info:    Preparing for run 8 of geometric_KPIECE1
+Warning: KPIECE1: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   KPIECE1: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   KPIECE1: There are no valid initial states!
+         at line 114 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/kpiece/src/KPIECE1.cpp
+Info:    Preparing for run 9 of geometric_KPIECE1
+Warning: KPIECE1: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   KPIECE1: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   KPIECE1: There are no valid initial states!
+         at line 114 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/kpiece/src/KPIECE1.cpp
+Info:    Preparing for run 10 of geometric_KPIECE1
+Warning: KPIECE1: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   KPIECE1: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   KPIECE1: There are no valid initial states!
+         at line 114 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/kpiece/src/KPIECE1.cpp
+Info:    Preparing for run 11 of geometric_KPIECE1
+Warning: KPIECE1: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   KPIECE1: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   KPIECE1: There are no valid initial states!
+         at line 114 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/kpiece/src/KPIECE1.cpp
+Info:    Preparing for run 12 of geometric_KPIECE1
+Warning: KPIECE1: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   KPIECE1: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   KPIECE1: There are no valid initial states!
+         at line 114 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/kpiece/src/KPIECE1.cpp
+Info:    Preparing for run 13 of geometric_KPIECE1
+Warning: KPIECE1: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   KPIECE1: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   KPIECE1: There are no valid initial states!
+         at line 114 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/kpiece/src/KPIECE1.cpp
+Info:    Preparing for run 14 of geometric_KPIECE1
+Warning: KPIECE1: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   KPIECE1: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   KPIECE1: There are no valid initial states!
+         at line 114 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/kpiece/src/KPIECE1.cpp
+Info:    Preparing for run 15 of geometric_KPIECE1
+Warning: KPIECE1: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   KPIECE1: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   KPIECE1: There are no valid initial states!
+         at line 114 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/kpiece/src/KPIECE1.cpp
+Info:    Preparing for run 16 of geometric_KPIECE1
+Warning: KPIECE1: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   KPIECE1: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   KPIECE1: There are no valid initial states!
+         at line 114 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/kpiece/src/KPIECE1.cpp
+Info:    Preparing for run 17 of geometric_KPIECE1
+Warning: KPIECE1: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   KPIECE1: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   KPIECE1: There are no valid initial states!
+         at line 114 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/kpiece/src/KPIECE1.cpp
+Info:    Preparing for run 18 of geometric_KPIECE1
+Warning: KPIECE1: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   KPIECE1: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   KPIECE1: There are no valid initial states!
+         at line 114 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/kpiece/src/KPIECE1.cpp
+Info:    Preparing for run 19 of geometric_KPIECE1
+Warning: KPIECE1: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   KPIECE1: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   KPIECE1: There are no valid initial states!
+         at line 114 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/kpiece/src/KPIECE1.cpp
+Info:    Preparing for run 0 of geometric_RRT
+Warning: RRT: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   RRT: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   RRT: There are no valid initial states!
+         at line 111 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/rrt/src/RRT.cpp
+Info:    Preparing for run 1 of geometric_RRT
+Warning: RRT: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   RRT: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   RRT: There are no valid initial states!
+         at line 111 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/rrt/src/RRT.cpp
+Info:    Preparing for run 2 of geometric_RRT
+Warning: RRT: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   RRT: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   RRT: There are no valid initial states!
+         at line 111 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/rrt/src/RRT.cpp
+Info:    Preparing for run 3 of geometric_RRT
+Warning: RRT: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   RRT: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   RRT: There are no valid initial states!
+         at line 111 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/rrt/src/RRT.cpp
+Info:    Preparing for run 4 of geometric_RRT
+Warning: RRT: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   RRT: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   RRT: There are no valid initial states!
+         at line 111 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/rrt/src/RRT.cpp
+Info:    Preparing for run 5 of geometric_RRT
+Warning: RRT: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   RRT: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   RRT: There are no valid initial states!
+         at line 111 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/rrt/src/RRT.cpp
+Info:    Preparing for run 6 of geometric_RRT
+Warning: RRT: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   RRT: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   RRT: There are no valid initial states!
+         at line 111 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/rrt/src/RRT.cpp
+Info:    Preparing for run 7 of geometric_RRT
+Warning: RRT: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   RRT: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   RRT: There are no valid initial states!
+         at line 111 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/rrt/src/RRT.cpp
+Info:    Preparing for run 8 of geometric_RRT
+Warning: RRT: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   RRT: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   RRT: There are no valid initial states!
+         at line 111 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/rrt/src/RRT.cpp
+Info:    Preparing for run 9 of geometric_RRT
+Warning: RRT: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   RRT: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   RRT: There are no valid initial states!
+         at line 111 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/rrt/src/RRT.cpp
+Info:    Preparing for run 10 of geometric_RRT
+Warning: RRT: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   RRT: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   RRT: There are no valid initial states!
+         at line 111 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/rrt/src/RRT.cpp
+Info:    Preparing for run 11 of geometric_RRT
+Warning: RRT: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   RRT: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   RRT: There are no valid initial states!
+         at line 111 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/rrt/src/RRT.cpp
+Info:    Preparing for run 12 of geometric_RRT
+Warning: RRT: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   RRT: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   RRT: There are no valid initial states!
+         at line 111 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/rrt/src/RRT.cpp
+Info:    Preparing for run 13 of geometric_RRT
+Warning: RRT: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   RRT: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   RRT: There are no valid initial states!
+         at line 111 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/rrt/src/RRT.cpp
+Info:    Preparing for run 14 of geometric_RRT
+Warning: RRT: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   RRT: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   RRT: There are no valid initial states!
+         at line 111 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/rrt/src/RRT.cpp
+Info:    Preparing for run 15 of geometric_RRT
+Warning: RRT: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   RRT: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   RRT: There are no valid initial states!
+         at line 111 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/rrt/src/RRT.cpp
+Info:    Preparing for run 16 of geometric_RRT
+Warning: RRT: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   RRT: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   RRT: There are no valid initial states!
+         at line 111 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/rrt/src/RRT.cpp
+Info:    Preparing for run 17 of geometric_RRT
+Warning: RRT: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   RRT: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   RRT: There are no valid initial states!
+         at line 111 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/rrt/src/RRT.cpp
+Info:    Preparing for run 18 of geometric_RRT
+Warning: RRT: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   RRT: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   RRT: There are no valid initial states!
+         at line 111 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/rrt/src/RRT.cpp
+Info:    Preparing for run 19 of geometric_RRT
+Warning: RRT: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   RRT: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   RRT: There are no valid initial states!
+         at line 111 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/rrt/src/RRT.cpp
+Info:    Preparing for run 0 of geometric_PRM
+Warning: PRM: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   PRM: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   PRM: There are no valid initial states!
+         at line 374 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/prm/src/PRM.cpp
+Info:    Preparing for run 1 of geometric_PRM
+Warning: PRM: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   PRM: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   PRM: There are no valid initial states!
+         at line 374 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/prm/src/PRM.cpp
+Info:    Preparing for run 2 of geometric_PRM
+Warning: PRM: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   PRM: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   PRM: There are no valid initial states!
+         at line 374 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/prm/src/PRM.cpp
+Info:    Preparing for run 3 of geometric_PRM
+Warning: PRM: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   PRM: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   PRM: There are no valid initial states!
+         at line 374 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/prm/src/PRM.cpp
+Info:    Preparing for run 4 of geometric_PRM
+Warning: PRM: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   PRM: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   PRM: There are no valid initial states!
+         at line 374 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/prm/src/PRM.cpp
+Info:    Preparing for run 5 of geometric_PRM
+Warning: PRM: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   PRM: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   PRM: There are no valid initial states!
+         at line 374 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/prm/src/PRM.cpp
+Info:    Preparing for run 6 of geometric_PRM
+Warning: PRM: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   PRM: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   PRM: There are no valid initial states!
+         at line 374 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/prm/src/PRM.cpp
+Info:    Preparing for run 7 of geometric_PRM
+Warning: PRM: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   PRM: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   PRM: There are no valid initial states!
+         at line 374 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/prm/src/PRM.cpp
+Info:    Preparing for run 8 of geometric_PRM
+Warning: PRM: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   PRM: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   PRM: There are no valid initial states!
+         at line 374 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/prm/src/PRM.cpp
+Info:    Preparing for run 9 of geometric_PRM
+Warning: PRM: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   PRM: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   PRM: There are no valid initial states!
+         at line 374 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/prm/src/PRM.cpp
+Info:    Preparing for run 10 of geometric_PRM
+Warning: PRM: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   PRM: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   PRM: There are no valid initial states!
+         at line 374 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/prm/src/PRM.cpp
+Info:    Preparing for run 11 of geometric_PRM
+Warning: PRM: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   PRM: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   PRM: There are no valid initial states!
+         at line 374 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/prm/src/PRM.cpp
+Info:    Preparing for run 12 of geometric_PRM
+Warning: PRM: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   PRM: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   PRM: There are no valid initial states!
+         at line 374 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/prm/src/PRM.cpp
+Info:    Preparing for run 13 of geometric_PRM
+Warning: PRM: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   PRM: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   PRM: There are no valid initial states!
+         at line 374 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/prm/src/PRM.cpp
+Info:    Preparing for run 14 of geometric_PRM
+Warning: PRM: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   PRM: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   PRM: There are no valid initial states!
+         at line 374 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/prm/src/PRM.cpp
+Info:    Preparing for run 15 of geometric_PRM
+Warning: PRM: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   PRM: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   PRM: There are no valid initial states!
+         at line 374 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/prm/src/PRM.cpp
+Info:    Preparing for run 16 of geometric_PRM
+Warning: PRM: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   PRM: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   PRM: There are no valid initial states!
+         at line 374 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/prm/src/PRM.cpp
+Info:    Preparing for run 17 of geometric_PRM
+Warning: PRM: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   PRM: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   PRM: There are no valid initial states!
+         at line 374 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/prm/src/PRM.cpp
+Info:    Preparing for run 18 of geometric_PRM
+Warning: PRM: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   PRM: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   PRM: There are no valid initial states!
+         at line 374 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/prm/src/PRM.cpp
+Info:    Preparing for run 19 of geometric_PRM
+Warning: PRM: Skipping invalid start state (invalid state)
+         at line 251 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/base/src/Planner.cpp
+Debug:   PRM: Discarded start state Compound state [
+SO2State [0]
+SO2State [1.5708]
+]
+
+Error:   PRM: There are no valid initial states!
+         at line 374 in /Users/Arjun/Desktop/Otherlab/omplapp3/ompl/src/ompl/geometric/planners/prm/src/PRM.cpp
+Info:    Benchmark complete

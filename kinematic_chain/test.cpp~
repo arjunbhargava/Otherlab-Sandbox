@@ -1,0 +1,4 @@
+#include <test.h>
+
+namespace other{
+}
