@@ -9,7 +9,8 @@
 #include <ompl/base/spaces/SO3StateSpace.h>
 #include <boost/math/constants/constants.hpp>
 #include <boost/format.hpp>
-
+#include <geode/vector/Rotation.h>
+#include <geode/vector/Frame.h>
 #include <geode/python/wrap.h>
 #include <geode/vector/convert.h>
 #include <geode/array/Nested.h>
@@ -31,7 +32,7 @@ using std::endl;
 namespace other {
 
 /* Order of things to do: 
-
+ 
 1.Generate a few compound spaces and set them to be random. See if you can even do that DONE
 2.Using a true condition on isValid, see if you can solve any of the paths DONE
 3. Set limits on the space 
@@ -138,20 +139,46 @@ class SO26ValidityChecker : public ob::StateValidityChecker
 
 };
 
-
-
-/*Vector<real, 3> effector_from_state(const vector<real>& joint_angles) {
+Vector<real, 3> effector_from_state(Array<real> &joint_angles, ob::SpaceInformationPtr &si, vector<link_t> &nodes) {
 	
 	vector<Frame<Vector<real,3>>> frames;
+	//Rotation<Vector<real, 3>> rotation_object = Rotation<Vector<real, 3>>(0, nodes[0].axis);
 
-	for(int i = 0; i < si_->getStateDimension(); ++i) {
-			Frame<Vector<real,3>> f = frames.size() > 0 ? frames.back() : Frame<Vector<real, 3>>();
-			frames.push_back(Frame<Vector<real,3>>(offsets[i], )
+	for(unsigned int i = 0; i < si->getStateDimension(); ++i) {			
+		
+		auto f = Frame<Vector<real,3>>(); //Let's create a frame
+		int factor = nodes[i].negate_rotation ? -1 : 1; //For Kuka robots to move how we want them to
+
+		if(i == 0) {
+			f.t = nodes[0].offsets; //Offset of the base shouldn't ever change..
+			//The axis doesn't either, but the rotation angle itself does.  
+			auto rotation_object = Rotation<Vector<real,3>>(factor * joint_angles[i], nodes[i].axis); 
+			f.r = rotation_object;
+			frames.push_back(f);
+			
+			} else {
+			//If it's not the first link, then get the previous link 
+			f = frames.back();
+
+			
+			//Your rotation axis should be previous guy's rotation applied to your axis.
+			auto rotation_object = Rotation<Vector<real,3>>(factor * joint_angles[i], f.r * nodes[i].axis);
+
+			//Your position is the offset of the other guy + ABSOLUTE rotation * your offset. Your absolute rotation 
+			//is the previous absolute rotation multiplied by your relative rotation. 
+			frames.push_back(Frame<Vector<real,3>>(f.t + f.r * nodes[i].offsets, f.r * rotation_object));
+
+			}			
 	}		
 
-	return frames;			
+	for(int j = 0; j < 3; j++) {
+				cout << frames[6].t[j] << endl;
+				//cout << f.r[0] << endl;
+				//Add it to the bottom of the vector
+			}
+	return frames[6].t;			
 }
-*/
+
 void initializeAxes(ob::SpaceInformationPtr &si, vector<link_t> &nodes, Array<Vector<real,3>> &offsets) {
 	
 	Vector<real, 3> x_axis(1,0,0);
@@ -162,7 +189,7 @@ void initializeAxes(ob::SpaceInformationPtr &si, vector<link_t> &nodes, Array<Ve
 		link_t this_node;
 		this_node.rotation_min = upper_kr16_bounds[i];
 		this_node.rotation_max = lower_kr16_bounds[i];
-		this_node.offsets = offsets[i];
+		this_node.offsets = i==0 ? offsets[i] : offsets[i] - offsets[i-1];
 		
 		if(i == 3 || i == 5)
 			this_node.axis = x_axis;
@@ -198,6 +225,7 @@ static Nested<real> plan(unsigned int links, double linkLength, Array<real> goal
 
 	//Create a subspace with the given number of links
 	//Create the space information pointer that everything else takes...
+
 	ob::StateSpacePtr space(new ChainSpace(links, linkLength)); 
 	ob::SpaceInformationPtr si(new ob::SpaceInformation(space));
 
@@ -206,6 +234,9 @@ static Nested<real> plan(unsigned int links, double linkLength, Array<real> goal
 	vector<link_t> nodes;
 
 	initializeAxes(si, nodes, parsed_offsets);
+
+	effector_from_state(goalState, si, nodes);
+
 
 	//We initialize as a 000000 state for the start configuration
 	ob::ScopedState<ob::CompoundStateSpace> start(space); 
