@@ -27,6 +27,7 @@ using namespace geode;
 using std::vector;
 using std::cout;
 using std::endl;
+
 namespace other {
 
 /* Order of things to do: 
@@ -50,14 +51,12 @@ double lower_kr16_bounds [] = {-185, -155,-130, -350, -130, -350};
 
 //Creating a struct of each linkage so we can refer to all that information later. 
 struct link_t {
-
 	Vector<real,3> axis;
 	double rotation_max;
 	double rotation_min;
-	Array<Vector<real,3>> offsets;
+	Vector<real,3> offsets;
 	bool negate_rotation;
-
-} nodes[6];
+};
 
 class ChainSpace : public ob::CompoundStateSpace {
 
@@ -97,13 +96,11 @@ class ChainSpace : public ob::CompoundStateSpace {
 
 	protected: 
 		unsigned int links_;
-		double linkLength_;
-		
-
+		double linkLength_;		
 };
 
 /*We define a validity checker on SO2 subspaces. Basically we're going to bound the angles based on the 
-kuka r16 bounds for each of the joints. */ 
+kuka r16 bounds for each of the joints. Currently working on mesh collision with objects in real space*/ 
 
 class SO26ValidityChecker : public ob::StateValidityChecker
 {
@@ -123,11 +120,9 @@ class SO26ValidityChecker : public ob::StateValidityChecker
 				if(angle > upper_kr16_bounds[i] || angle < lower_kr16_bounds[i])
 					return false;
 			 }
-
-
-
 			return true;
 	    }
+
 	private:
 
 /* Things to do: 
@@ -149,14 +144,40 @@ class SO26ValidityChecker : public ob::StateValidityChecker
     compound = frames[i]*compound;
   }	
 		}
-
-
 	*/
 	protected: 
 		Ref<TriMesh> mesh_ ;
 		Ref<SimplexTree<Vector<real,3>,2>> mesh_tree;
 
 };
+
+void initializeAxes(ob::SpaceInformationPtr &si, link_t (&nodes)[6], Array<Vector<real,3>> &offsets) {
+	
+	Vector<real, 3> x_axis(1,0,0);
+	Vector<real, 3> y_axis(0,1,0);
+	Vector<real, 3> z_axis(0,0,1);
+
+	for(unsigned int i = 0; i < si->getStateDimension(); ++i) {
+		link_t this_node;
+		this_node.rotation_min = upper_kr16_bounds[i];
+		this_node.rotation_max = lower_kr16_bounds[i];
+		this_node.offsets = offsets[i];
+		
+		if(i == 3 || i == 5)
+			this_node.axis = x_axis;
+		else if(i == 0)
+			this_node.axis = z_axis;
+		else
+			this_node.axis = z_axis;
+
+		if(this_node.axis == z_axis || this_node.axis == x_axis)
+			this_node.negate_rotation = true;
+		else 
+			this_node.negate_rotation = false;
+
+		nodes[i] = this_node;
+	}
+}
 
 bool this_isValid(ob::ScopedState<ob::CompoundStateSpace> state, const ob::SpaceInformationPtr &si) {
 
@@ -169,11 +190,9 @@ bool this_isValid(ob::ScopedState<ob::CompoundStateSpace> state, const ob::Space
 }
 
 static Nested<real> plan(unsigned int links, double linkLength, Array<real> goalState, 
-	/*Ref<TriMesh> obstacleMesh,*/ Array<Vector<real, 3>> parsed_offsets) {
-	offsets = parsed_offsets;
-//	Ref<TriMesh> obstacleMesh = linkLength;
+	Ref<TriMesh> obstacleMesh, Array<Vector<real, 3>> parsed_offsets) {
+	//Ref<TriMesh> obstacleMesh = linkLength;
 	//auto mesh_tree = mesh->face_tree();
-
 	//auto face_point = mesh_tree->closest_point("asdf");
 
 	//Create a subspace with the given number of links
@@ -182,6 +201,11 @@ static Nested<real> plan(unsigned int links, double linkLength, Array<real> goal
 	ob::SpaceInformationPtr si(new ob::SpaceInformation(space));
 
 	si->setStateValidityCheckingResolution(.0000001);
+
+	link_t nodes[6];
+
+	initializeAxes(si, nodes, parsed_offsets);
+
 	//We initialize as a 000000 state for the start configuration
 	ob::ScopedState<ob::CompoundStateSpace> start(space); 
 	ob::ScopedState<ob::CompoundStateSpace> goal(space);
@@ -192,7 +216,7 @@ static Nested<real> plan(unsigned int links, double linkLength, Array<real> goal
 	}
 
 	//Eventually this will be where I do validity checking 
-	si->setStateValidityChecker(ob::StateValidityCheckerPtr(new SO26ValidityChecker(si), obstacleMesh)));
+	si->setStateValidityChecker(ob::StateValidityCheckerPtr(new SO26ValidityChecker(si, obstacleMesh)));
 
 	//Code from the box: set up a problem, solve it. Resolution parameters are changed here. 
 	ob::ProblemDefinitionPtr pdef(new ob::ProblemDefinition(si));
@@ -253,7 +277,7 @@ static Nested<real> plan(unsigned int links, double linkLength, Array<real> goal
 using namespace other;
 
 void wrap_6d_kinematics_with_collision(){
-	geode::python::function("plan_2",plan);
+	geode::python::function("plan",plan);
 }
 
 /*
