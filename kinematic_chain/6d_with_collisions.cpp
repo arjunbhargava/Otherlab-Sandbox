@@ -166,17 +166,16 @@ Vector<real, 3> effector_from_state(Array<real> &joint_angles, ob::SpaceInformat
 
 			//Your position is the offset of the other guy + ABSOLUTE rotation * your offset. Your absolute rotation 
 			//is the previous absolute rotation multiplied by your relative rotation. 
-			frames.push_back(Frame<Vector<real,3>>(f.t + f.r * nodes[i].offsets, f.r * rotation_object));
+			frames.push_back(Frame<Vector<real,3>>(f.t + f.r * nodes[i].offsets, rotation_object * f.r ));
 
-			}			
+			}		
+
+
 	}		
-
-	for(int j = 0; j < 3; j++) {
-				cout << frames[6].t[j] << endl;
-				//cout << f.r[0] << endl;
-				//Add it to the bottom of the vector
-			}
-	return frames[6].t;			
+	for(int i = 0; i < 3; i++) {
+		cout << frames[5].t[i] << endl;
+	}
+	return frames[5].t;			
 }
 
 void initializeAxes(ob::SpaceInformationPtr &si, vector<link_t> &nodes, Array<Vector<real,3>> &offsets) {
@@ -189,7 +188,7 @@ void initializeAxes(ob::SpaceInformationPtr &si, vector<link_t> &nodes, Array<Ve
 		link_t this_node;
 		this_node.rotation_min = upper_kr16_bounds[i];
 		this_node.rotation_max = lower_kr16_bounds[i];
-		this_node.offsets = i==0 ? offsets[i] : offsets[i] - offsets[i-1];
+		this_node.offsets = i==0 ? offsets[i] : offsets[i] - nodes.back().offsets;//offsets[i-1];
 		
 		if(i == 3 || i == 5)
 			this_node.axis = x_axis;
@@ -218,8 +217,10 @@ bool this_isValid(ob::ScopedState<ob::CompoundStateSpace> state, const ob::Space
 }
 
 static Nested<real> plan(unsigned int links, double linkLength, Array<real> goalState, Array<Vector<real, 3>> parsed_offsets) {
-	/*Ref<TriMesh> obstacleMesh,*/
-	//Ref<TriMesh> obstacleMesh = linkLength;
+	/*Ref<TriMesh> obstacleMesh = new_<TriMesh>();
+		obstacleMesh->read("axis_1.stl")	
+	*/
+
 	//auto mesh_tree = mesh->face_tree();
 	//auto face_point = mesh_tree->closest_point("asdf");
 
@@ -311,6 +312,7 @@ using namespace other;
 void wrap_6d_kinematics_with_collision(){
 	geode::python::function("plan",plan);
 }
+
 
 /*
 void wrap_chain_space(){

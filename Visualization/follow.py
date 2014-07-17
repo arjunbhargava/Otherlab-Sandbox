@@ -122,6 +122,19 @@ class Arm(object):
   def effectors(self):
     return [  f(self.nodes[-1]) for f in self.effector_functions]
 
+  @cache_method
+  def mesh(self):
+    m = TriMesh()
+    m.request_face_normals()
+    m.request_vertex_normals()
+    m.add_mesh(self.base_mesh)
+    for node in self.nodes:
+      tm=node.mesh().copy()
+      tm.transform(node.frame().matrix())
+      m.add_mesh(tm)
+
+    m.update_normals()
+    return m
 
   @cache_method
   def lists(self):
@@ -252,7 +265,7 @@ class System():
         p.set(p() + val*180/pi)
       
       #return array(angles * pi/180)
-
+    print self.arms[0]
     return array([p()*pi/180 for p in self.axis_props()])
 
     #f = self.arms[0].nodes[-1].frame() 

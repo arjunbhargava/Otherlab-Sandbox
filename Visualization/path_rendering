@@ -19,6 +19,12 @@ angle_path = [];
 armset1 = System([Arm('a1',6,effector_functions)])
 armset_dummy = System([Arm('a2',6,effector_functions)])
 
+'''obstacle_arm_frame = Frames(array(2543,0,0]),Rotation.from_angle_axis(pi,array([0,0,1])))
+obstacle_arm = Arm('obstacle',6,[],bf=obstacle_arm_frame)
+obstacle_mesh = obstacle_arm.mesh()
+'''
+#obstacle_f_tree = obstacle_mesh.face_tree()
+
 '''
 def angle_generation():
   f = open('/Users/Arjun/Desktop/Otherlab/sandbox/build/native/release/bin/Solution_path.txt', 'r');
@@ -50,14 +56,16 @@ def view():
   main = MainWindow(props)
   #We're going to add some windows
   ks = KukaScene(armset1)
+  #ks2 = KukaScene(System([obstacle_arm]))
   main.view.add_scene("kuka",ks)
+  #main.view.add_scene("kuka",ks2)
   main.view.show_all(True)
   dimension = 6;
   #goal = armset1.update_effector()
   goal = armset_dummy.update_effector();
   robot_origins = asarray(get_origins());
   if len(goal) == dimension:
-    angle_path = plan(6,1., goal, robot_origins)
+    angle_path = plan(6,1., goal, robot_origins) 
     props.get("last_frame").set(len(angle_path))
   
   main.resize_timeline(100);
