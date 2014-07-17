@@ -186,16 +186,16 @@ void initializeAxes(ob::SpaceInformationPtr &si, vector<link_t> &nodes, Array<Ve
 
 	for(unsigned int i = 0; i < si->getStateDimension(); ++i) {
 		link_t this_node;
-		this_node.rotation_min = upper_kr16_bounds[i];
-		this_node.rotation_max = lower_kr16_bounds[i];
-		this_node.offsets = i==0 ? offsets[i] : offsets[i] - nodes.back().offsets;//offsets[i-1];
+		this_node.rotation_min = lower_kr16_bounds[i];
+		this_node.rotation_max = upper_kr16_bounds[i];
+		this_node.offsets = i==0 ? offsets[i] : offsets[i] - offsets[i-1]; //nodes.back().offsets;//;
 		
 		if(i == 3 || i == 5)
 			this_node.axis = x_axis;
 		else if(i == 0)
 			this_node.axis = z_axis;
 		else
-			this_node.axis = z_axis;
+			this_node.axis = y_axis;
 
 		if(this_node.axis == z_axis || this_node.axis == x_axis)
 			this_node.negate_rotation = true;

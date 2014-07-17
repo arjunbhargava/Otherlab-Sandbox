@@ -302,6 +302,14 @@ class KukaScene(Scene):
       GL.glEnd()
       GL.glEnable(GL.GL_DEPTH_TEST)
 
+    GL.glDisable(GL.GL_DEPTH_TEST)
+    GL.glPointSize(5)
+    GL.glBegin(GL.GL_POINTS)
+    GL.glColor3f(0,0,1)
+    GL.glVertex3f(716, 397, 1427)
+    GL.glEnd()
+    GL.glEnable(GL.GL_DEPTH_TEST)
+
     for armid,armlists in enumerate(self.lists()):
       for id,list in enumerate(armlists):
         with gl_scope():
