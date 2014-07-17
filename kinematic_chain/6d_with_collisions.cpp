@@ -15,6 +15,8 @@
 #include <geode/vector/convert.h>
 #include <geode/array/Nested.h>
 #include <geode/openmesh/TriMesh.h>
+#include <geode/geometry/SimplexTree.h>
+#include <geode/geometry/ParticleTree.h>
 
 #include <fstream>
 #include <iostream>
@@ -31,26 +33,12 @@ using std::endl;
 
 namespace other {
 
-/* Order of things to do: 
- 
-1.Generate a few compound spaces and set them to be random. See if you can even do that DONE
-2.Using a true condition on isValid, see if you can solve any of the paths DONE
-3. Set limits on the space 
-4. Try a few different planners/visualizing?? 
-5. Try building an actual isValid function 
-
-*/
-/*This class creates a compound space with 6 SO2 subspaces. Each of the subsapces 
-represents a joint angle in the KUKA R16. The space is created here without bounding, 
-and can be any dimension/size.  
-*/
-
 const double pi = boost::math::constants::pi<double>();
 
 double upper_kr16_bounds [] = {185, 35, 154, 350, 130, 350};
 double lower_kr16_bounds [] = {-185, -155,-130, -350, -130, -350};
 
-//Creating a struct of each linkage so we can refer to all that information later. 
+//Creating a struct of each linkage, used for rendering/ forward kinematics
 struct link_t {
 	Vector<real,3> axis;
 	double rotation_max;
@@ -58,6 +46,12 @@ struct link_t {
 	Vector<real,3> offsets;
 	bool negate_rotation;
 };
+
+
+/*This class creates a compound space with 6 SO2 subspaces. Each of the subsapces 
+represents a joint angle in the KUKA R16. The space is created here without bounding, 
+and can be any dimension/size.  
+*/
 
 class ChainSpace : public ob::CompoundStateSpace {
 
@@ -101,82 +95,84 @@ class ChainSpace : public ob::CompoundStateSpace {
 };
 
 /*We define a validity checker on SO2 subspaces. Basically we're going to bound the angles based on the 
-kuka r16 bounds for each of the joints. Currently working on mesh collision with objects in real space*/ 
+kuka r16 bounds for each of the joints. Currently working on mesh collision with objects in real space, 
+with the current object in real space being the other Kuka robot. */ 
 
 class SO26ValidityChecker : public ob::StateValidityChecker
 {
 	public:
-	    SO26ValidityChecker(const ob::SpaceInformationPtr &si, /*Ref<TriMesh> mesh,*/ vector<link_t> &nodes):
-			ob::StateValidityChecker(si), nodes_(nodes) /* mesh_(mesh), mesh_tree(mesh->face_tree()),*/
+	    SO26ValidityChecker(const ob::SpaceInformationPtr &si,vector<link_t> &nodes,  Ref<TriMesh> mesh):
+			ob::StateValidityChecker(si),  mesh_(mesh), mesh_tree(mesh->face_tree()), nodes_(nodes), 
+				stateDimension(si->getStateDimension())
 	    {
 	    }
 	     
 	    bool isValid(const ob::State *state) const
 	    {
-	        const ChainSpace* space = static_cast<const ChainSpace*>(si_->getStateSpace().get());
+	    	Array<real> joint_angles(stateDimension);
+	        //const ChainSpace* space = static_cast<const ChainSpace*>(si_->getStateSpace().get());
 			const ChainSpace::StateType *cstate1 = static_cast<const ChainSpace::StateType*>(state); 
-
-			for(unsigned int i = 0; i < si_->getStateDimension(); ++i) {
+			for(unsigned int i = 0; i < stateDimension; ++i) {
 				double angle = cstate1->components[i]->as<ob::SO2StateSpace::StateType>()->value * 180/pi;
-				if(angle > upper_kr16_bounds[i] || angle < lower_kr16_bounds[i])
+				if(angle > upper_kr16_bounds[i] || angle < lower_kr16_bounds[i]) {
+					cout << "Failed here " << endl;
 					return false;
+				}
+				joint_angles[i] = angle * pi/180;
 			 }
-			return true;
+
+			return computeDistance(effector_from_state(joint_angles));
+
 	    }
 
 	private:
 
-/* Things to do: 
-	1. Define the offsets properly 
-	2. Figure out how the self-axis rotates
-	3. Struct defining the axes of rotation, etc... 
-	4. What is this whole compound thing? 
-*/
-	protected: 
-		//Ref<TriMesh> mesh_ ;
-		//Ref<SimplexTree<Vector<real,3>,2>> mesh_tree;
-		vector<link_t> nodes_;
+		Vector<real, 3> effector_from_state(const Array<real> &state_angles) const {
+	
+			vector<Frame<Vector<real,3>>> frames;
+			//Rotation<Vector<real, 3>> rotation_object = Rotation<Vector<real, 3>>(0, nodes[0].axis);
 
+			for(unsigned int i = 0; i < stateDimension; ++i) {			
+				auto f = Frame<Vector<real,3>>(); //Let's create a frame
+				int factor = nodes_[i].negate_rotation ? -1 : 1; //For Kuka robots to move how we want them to
+
+				if(i == 0) {
+					f.t = nodes_[0].offsets; //Offset of the base shouldn't ever change..
+					//The axis doesn't either, but the rotation angle itself does.  
+					auto rotation_object = Rotation<Vector<real,3>>(factor * state_angles[i], nodes_[i].axis); 
+					f.r = rotation_object;
+					frames.push_back(f);
+					
+				} else {
+					//If it's not the first link, then get the previous link 
+					f = frames.back();
+					//Your rotation axis should be previous guy's rotation applied to your axis.
+					auto rotation_object = Rotation<Vector<real,3>>(factor * state_angles[i], f.r * nodes_[i].axis);
+
+					//Your position is the offset of the other guy + ABSOLUTE rotation * your offset. Your absolute rotation 
+					//is the previous absolute rotation multiplied by your relative rotation. Note the order of matrix multiplication
+					frames.push_back(Frame<Vector<real,3>>(f.t + f.r * nodes_[i].offsets, rotation_object * f.r ));
+				}		
+			}		
+			
+			return frames[stateDimension-1].t;
+		}
+
+		bool computeDistance(Vector<real,3> effector_position) const {
+			auto difference = mesh_tree->distance(effector_position);
+			return difference > 10;
+		}
+
+	protected: 
+		Ref<TriMesh> mesh_;
+		Ref<SimplexTree<Vector<real,3>,2>> mesh_tree;
+		vector<link_t> nodes_;
+		unsigned int stateDimension;
+		int max_distance; 
 };
 
-Vector<real, 3> effector_from_state(Array<real> &joint_angles, ob::SpaceInformationPtr &si, vector<link_t> &nodes) {
-	
-	vector<Frame<Vector<real,3>>> frames;
-	//Rotation<Vector<real, 3>> rotation_object = Rotation<Vector<real, 3>>(0, nodes[0].axis);
-
-	for(unsigned int i = 0; i < si->getStateDimension(); ++i) {			
-		
-		auto f = Frame<Vector<real,3>>(); //Let's create a frame
-		int factor = nodes[i].negate_rotation ? -1 : 1; //For Kuka robots to move how we want them to
-
-		if(i == 0) {
-			f.t = nodes[0].offsets; //Offset of the base shouldn't ever change..
-			//The axis doesn't either, but the rotation angle itself does.  
-			auto rotation_object = Rotation<Vector<real,3>>(factor * joint_angles[i], nodes[i].axis); 
-			f.r = rotation_object;
-			frames.push_back(f);
-			
-			} else {
-			//If it's not the first link, then get the previous link 
-			f = frames.back();
-
-			
-			//Your rotation axis should be previous guy's rotation applied to your axis.
-			auto rotation_object = Rotation<Vector<real,3>>(factor * joint_angles[i], f.r * nodes[i].axis);
-
-			//Your position is the offset of the other guy + ABSOLUTE rotation * your offset. Your absolute rotation 
-			//is the previous absolute rotation multiplied by your relative rotation. 
-			frames.push_back(Frame<Vector<real,3>>(f.t + f.r * nodes[i].offsets, rotation_object * f.r ));
-
-			}		
-
-
-	}		
-	for(int i = 0; i < 3; i++) {
-		cout << frames[5].t[i] << endl;
-	}
-	return frames[5].t;			
-}
+/* Initializes the axes for each linkage (sets up frames) on which the forward kinematics
+are eventually computed. These are then used for validity checking. */
 
 void initializeAxes(ob::SpaceInformationPtr &si, vector<link_t> &nodes, Array<Vector<real,3>> &offsets) {
 	
@@ -216,28 +212,19 @@ bool this_isValid(ob::ScopedState<ob::CompoundStateSpace> state, const ob::Space
 	return true;
 }
 
-static Nested<real> plan(unsigned int links, double linkLength, Array<real> goalState, Array<Vector<real, 3>> parsed_offsets) {
-	/*Ref<TriMesh> obstacleMesh = new_<TriMesh>();
-		obstacleMesh->read("axis_1.stl")	
-	*/
-
-	//auto mesh_tree = mesh->face_tree();
-	//auto face_point = mesh_tree->closest_point("asdf");
+static Nested<real> plan(unsigned int links, double linkLength, Array<real> goalState, Array<Vector<real, 3>> parsed_offsets, 
+	Ref<TriMesh> obstacleMesh) {
 
 	//Create a subspace with the given number of links
 	//Create the space information pointer that everything else takes...
-
 	ob::StateSpacePtr space(new ChainSpace(links, linkLength)); 
 	ob::SpaceInformationPtr si(new ob::SpaceInformation(space));
 
 	si->setStateValidityCheckingResolution(.0000001);
 
+	//Set up the node structure from the given files. 
 	vector<link_t> nodes;
-
 	initializeAxes(si, nodes, parsed_offsets);
-
-	effector_from_state(goalState, si, nodes);
-
 
 	//We initialize as a 000000 state for the start configuration
 	ob::ScopedState<ob::CompoundStateSpace> start(space); 
@@ -249,7 +236,7 @@ static Nested<real> plan(unsigned int links, double linkLength, Array<real> goal
 	}
 
 	//Eventually this will be where I do validity checking 
-	si->setStateValidityChecker(ob::StateValidityCheckerPtr(new SO26ValidityChecker(si, /*obstacleMesh,*/ nodes)));
+	si->setStateValidityChecker(ob::StateValidityCheckerPtr(new SO26ValidityChecker(si, nodes, obstacleMesh)));
 
 	//Code from the box: set up a problem, solve it. Resolution parameters are changed here. 
 	ob::ProblemDefinitionPtr pdef(new ob::ProblemDefinition(si));
@@ -257,7 +244,7 @@ static Nested<real> plan(unsigned int links, double linkLength, Array<real> goal
 
     // create a planner for the defined space
    	og::RRTConnect* solver  = new og::RRTConnect(si);
-   	solver->setRange(.001);
+   	solver->setRange(.1);
     ob::PlannerPtr planner(solver);
     planner->setProblemDefinition(pdef);
     planner->setup();
@@ -283,23 +270,20 @@ static Nested<real> plan(unsigned int links, double linkLength, Array<real> goal
 
         for(unsigned int i = 0; i < path_states.size(); ++i) {
         	ChainSpace::StateType* cstate1 = static_cast<ChainSpace::StateType*>(path_states[i]);
-        	
         	for(unsigned int j = 0; j < si->getStateDimension(); ++j) {
         		step_vector.push_back(cstate1->components[j]->as<ob::SO2StateSpace::StateType>()->value);
         	}
-
       		path.append(asarray(step_vector).copy());
       		step_vector.clear();
         }
 
-        cout << "Found solution:" << endl;
+        cout << "Found solution" << endl;
         //solution_path->print(cout);
 
     } else {
         cout << "No solution found" << endl;
         step_vector.push_back(0);
         path.append(asarray(step_vector).copy());
-
 	}
 
 	return path;
