@@ -17,10 +17,16 @@
 #include <geode/openmesh/TriMesh.h>
 #include <geode/geometry/SimplexTree.h>
 #include <geode/geometry/ParticleTree.h>
+#include <geode/geometry/traverse.h>
+#include <geode/mesh/TriangleSoup.h>
+#include <geode/exact/collision.h>
 
+#include <math.h>
+#include <cmath>
 #include <fstream>
 #include <iostream>
-#include <cmath>
+
+#define Xi(i) tuple(i,X[i])
 
 //using namespace std;
 namespace ob = ompl::base;
@@ -32,6 +38,7 @@ using std::cout;
 using std::endl;
 
 namespace other {
+#define Xi(i) tuple(i,X[i])
 
 const double pi = boost::math::constants::pi<double>();
 
@@ -101,46 +108,121 @@ with the current object in real space being the other Kuka robot. */
 class SO26ValidityChecker : public ob::StateValidityChecker
 {
 	public:
-	    SO26ValidityChecker(const ob::SpaceInformationPtr &si,vector<link_t> &nodes,  Ref<TriMesh> mesh):
-			ob::StateValidityChecker(si),  mesh_(mesh), mesh_tree(mesh->face_tree()), nodes_(nodes), 
+	    SO26ValidityChecker(const ob::SpaceInformationPtr &si, unsigned int robot_number, vector<link_t> &axis_information,  vector<vector<Ref<TriMesh>>> meshes):
+			ob::StateValidityChecker(si),  meshes_(meshes), axis_information_(axis_information), robot_number_(robot_number),
 				stateDimension(si->getStateDimension())
 	    {
 	    }
 	     
 	    bool isValid(const ob::State *state) const
 	    {
-	    	return true;
 	    	Array<real> joint_angles(stateDimension);
-	        //const ChainSpace* space = static_cast<const ChainSpace*>(si_->getStateSpace().get());
 			const ChainSpace::StateType *cstate1 = static_cast<const ChainSpace::StateType*>(state); 
 			for(unsigned int i = 0; i < stateDimension; ++i) {
 				double angle = cstate1->components[i]->as<ob::SO2StateSpace::StateType>()->value * 180/pi;
-				if(angle > upper_kr16_bounds[i] || angle < lower_kr16_bounds[i]) {
-					cout << "Failed here " << endl;
+				int index = i%(stateDimension/robot_number_);
+				if(angle > upper_kr16_bounds[index] || angle < lower_kr16_bounds[index]) {
 					return false;
 				}
 				joint_angles[i] = angle * pi/180;
-			 }
-
-			return true;// computeDistance(effector_from_state(joint_angles));
-
+			}
+			
+			return !mesh_collisions_wrapper(generate_mesh(joint_angles));
 	    }
 
 	private:
 
-		Vector<real, 3> effector_from_state(const Array<real> &state_angles) const {
+		bool mesh_collisions(Ref<TriMesh> mesh1, Ref<TriMesh> mesh2) const {
+			auto face_tree1 = mesh1->face_tree();
+			auto face_tree2 = mesh2->face_tree();
+			//GEODE_ASSERT(face_tree1->leaf_size==1);
+			//GEODE_ASSERT(face_tree2->leaf_size==1);
+			auto X = face_tree1->X;
+			const TriangleSoup& faces = face_tree1->mesh;
+			const TriangleSoup& face2 = face_tree2->mesh;
+		    // Find ef_vertices
+		    struct {
+		      const Ref<const SimplexTree<Vector<real,3>,2>> face_tree1;
+		      const Ref<const SimplexTree<Vector<real,3>,2>> face_tree2;
+		      const RawArray<const Vector<real,3>> X;
+		      int counter;
+
+		      bool cull(const int ne, const int nf) const { return false; }
+
+		      void leaf(const int ne, const int nf) {
+		        const int face1 = face_tree1->prims(ne)[0],
+		                  face2 = face_tree2->prims(nf)[0];
+		        const auto fv1 = face_tree1->mesh->elements[face1];
+		        const auto fv2 = face_tree2->mesh->elements[face2];
+		           
+		        if (triangle_triangle_intersection(X[fv1.x], X[fv1.y], X[fv1.z],X[fv2.x],X[fv2.y],X[fv2.z])) 		
+					throw -1;
+		      
+		      }
+		    } helper({face_tree1, face_tree2, X, 0});
+
+		    try {
+			    double_traverse(*face_tree1,*face_tree2,helper);
+			} catch(int error) {
+				return true;
+			}		
+
+		    return false;
+		}
+		
+
+		bool mesh_collisions_wrapper(vector<Ref<TriMesh>> updated_meshes) const {
+			
+			//First let's just see if we can resolve self-collisions
+			int counter = 0;
+			for(unsigned int i = 0; i < robot_number_; i++) {
+				for(unsigned int j = 0; j < stateDimension/robot_number_-1; j++) {
+					for(unsigned int k = j+1; k < stateDimension/robot_number_; k++) {
+						if( k-j > 1) {
+							int index = i * stateDimension/robot_number_ + j; 
+							int index2 = i * stateDimension/robot_number_ + k;
+
+							if(mesh_collisions(updated_meshes[index], updated_meshes[index2]))
+								return true;
+						}
+					}	
+				}
+			}
+			return false;
+		}
+  		
+    
+
+		vector<Ref<TriMesh>> generate_mesh(Array<real> joint_angles) const { 
+
+			vector<Ref<TriMesh>> updated_meshes;
+			vector<Frame<Vector<real,3>>> frames = frame_from_state(joint_angles);
+
+			for(unsigned int i = 0; i < robot_number_; i++) {
+				for(unsigned int j = 0; j < meshes_[i].size(); j++) {
+					int index = i * (stateDimension/robot_number_)  + j;
+					Frame<Vector<real,3>> this_frame = frames[index];
+					updated_meshes.push_back(meshes_[i][j]);
+				//	updated_meshes.back()->transform(this_frame.matrix());
+				}
+			}
+			return updated_meshes;
+		}
+
+		vector<Frame<Vector<real, 3>>> frame_from_state(const Array<real> &state_angles) const {
 	
 			vector<Frame<Vector<real,3>>> frames;
-			//Rotation<Vector<real, 3>> rotation_object = Rotation<Vector<real, 3>>(0, nodes[0].axis);
 
-			for(unsigned int i = 0; i < stateDimension; ++i) {			
+			for(unsigned int i = 0; i < stateDimension; ++i) {	
+				int index = i%(stateDimension/robot_number_);		
+				
 				auto f = Frame<Vector<real,3>>(); //Let's create a frame
-				int factor = nodes_[i].negate_rotation ? -1 : 1; //For Kuka robots to move how we want them to
+				int factor = axis_information_[i].negate_rotation ? -1 : 1; //For Kuka robots to move how we want them to
 
-				if(i == 0) {
-					f.t = nodes_[0].offsets; //Offset of the base shouldn't ever change..
+				if(index == 0) { //Comes back in here when it's the nTh base. 
+					f.t = axis_information_[i].offsets; //Offset of the base shouldn't ever change..
 					//The axis doesn't either, but the rotation angle itself does.  
-					auto rotation_object = Rotation<Vector<real,3>>(factor * state_angles[i], nodes_[i].axis); 
+					auto rotation_object = Rotation<Vector<real,3>>(factor * state_angles[i], axis_information_[i].axis); 
 					f.r = rotation_object;
 					frames.push_back(f);
 					
@@ -148,26 +230,26 @@ class SO26ValidityChecker : public ob::StateValidityChecker
 					//If it's not the first link, then get the previous link 
 					f = frames.back();
 					//Your rotation axis should be previous guy's rotation applied to your axis.
-					auto rotation_object = Rotation<Vector<real,3>>(factor * state_angles[i], f.r * nodes_[i].axis);
+					auto rotation_object = Rotation<Vector<real,3>>(factor * state_angles[i], f.r * axis_information_[i].axis);
 
 					//Your position is the offset of the other guy + ABSOLUTE rotation * your offset. Your absolute rotation 
 					//is the previous absolute rotation multiplied by your relative rotation. Note the order of matrix multiplication
-					frames.push_back(Frame<Vector<real,3>>(f.t + f.r * nodes_[i].offsets, rotation_object * f.r ));
+					frames.push_back(Frame<Vector<real,3>>(f.t + f.r * axis_information_[i].offsets, rotation_object * f.r ));
 				}		
 			}		
-			
-			return frames[stateDimension-1].t;
+			return frames;
 		}
 
-		bool computeDistance(Vector<real,3> effector_position) const {
-			auto difference = mesh_tree->distance(effector_position);
-			return difference > 10;
-		}
+//		bool computeDistance(Vector<real,3> effector_position) const {
+//			return true;//auto difference = mesh_tree->distance(effector_position);
+			//return difference > 10;
+//		}
 
 	protected: 
-		Ref<TriMesh> mesh_;
-		Ref<SimplexTree<Vector<real,3>,2>> mesh_tree;
-		vector<link_t> nodes_;
+		vector<vector<Ref<TriMesh>>> meshes_;
+		vector<Ref<SimplexTree<Vector<real,3>,2>>> mesh_trees;
+		vector<link_t> axis_information_;
+		unsigned int robot_number_;
 		unsigned int stateDimension;
 		int max_distance; 
 };
@@ -175,61 +257,62 @@ class SO26ValidityChecker : public ob::StateValidityChecker
 /* Initializes the axes for each linkage (sets up frames) on which the forward kinematics
 are eventually computed. These are then used for validity checking. */
 
-void initializeAxes(ob::SpaceInformationPtr &si, vector<link_t> &nodes, Array<Vector<real,3>,2> &offsets) {
+void initializeAxes(ob::SpaceInformationPtr &si, vector<link_t> &axis_information, Array<Vector<real,3>,2> &offsets, double robot_number) {
 	
 	Vector<real, 3> x_axis(1,0,0);
 	Vector<real, 3> y_axis(0,1,0);
 	Vector<real, 3> z_axis(0,0,1);
 
-	for(unsigned int i = 0; i < si->getStateDimension(); ++i) {
-		link_t this_node;
-		this_node.rotation_min = lower_kr16_bounds[i];
-		this_node.rotation_max = upper_kr16_bounds[i];
-		this_node.offsets = i==0 ? offsets[0][i] : offsets[0][i] - offsets[0][i-1]; //nodes.back().offsets;//;
-		
-		if(i == 3 || i == 5)
-			this_node.axis = x_axis;
-		else if(i == 0)
-			this_node.axis = z_axis;
-		else
-			this_node.axis = y_axis;
+	for(int o = 0; o < (int) robot_number; ++o) {
+		auto robot_offsets = offsets[o];
+		for(unsigned int i = 0; i < si->getStateDimension()/robot_number; ++i) {
+			link_t this_node;
+			this_node.rotation_min = lower_kr16_bounds[i];
+			this_node.rotation_max = upper_kr16_bounds[i];
+			this_node.offsets = i==0 ? robot_offsets[i] : robot_offsets[i] - robot_offsets[i-1]; //nodes.back().offsets;//;
+			
+			if(i == 3 || i == 5)
+				this_node.axis = x_axis;
+			else if(i == 0)
+				this_node.axis = z_axis;
+			else
+				this_node.axis = y_axis;
 
-		if(this_node.axis == z_axis || this_node.axis == x_axis)
-			this_node.negate_rotation = true;
-		else 
-			this_node.negate_rotation = false;
+			if(this_node.axis == z_axis || this_node.axis == x_axis)
+				this_node.negate_rotation = true;
+			else 
+				this_node.negate_rotation = false;
 
-		nodes.push_back(this_node);
+			axis_information.push_back(this_node);
+		}
 	}
 }
 
 static Nested<real> plan(unsigned int links, double robot_number, Array<real> goalState, Array<Vector<real,3>,2> parsed_offsets, 
-	Ref<TriMesh> obstacleMesh) {
+	vector<vector<Ref<TriMesh>>> obstacleMeshes, double range) {
 
 	//Create a subspace with the given number of links
 	//Create the space information pointer that everything else takes...
 	ob::StateSpacePtr space(new ChainSpace(links, robot_number)); 
 	ob::SpaceInformationPtr si(new ob::SpaceInformation(space));
-
 	si->setStateValidityCheckingResolution(.0000001);
 
 	//Set up the node structure from the given files. 
-	vector<link_t> nodes;
-	initializeAxes(si, nodes, parsed_offsets);
-
+	vector<link_t> axis_information;
+	initializeAxes(si, axis_information, parsed_offsets, robot_number);
 	//We initialize as a 000000 state for the start configuration
 	ob::ScopedState<ob::CompoundStateSpace> start(space); 
 	ob::ScopedState<ob::CompoundStateSpace> goal(space);
 
 	for(unsigned int index = 0; index < si->getStateDimension(); ++index) {
 		start->as<ob::SO2StateSpace::StateType>(index)->value = 0;
-		if(index == 5) // I don't really like this, I'll start the robots looking the same way in later iterations.
-			start->as<ob::SO2StateSpace::StateType>(index)->value = pi;
+		//if(index == 6) // I don't really like this, I'll start the robots looking the same way in later iterations.
+		//	start->as<ob::SO2StateSpace::StateType>(index)->value = -coutpi;
 		goal->as<ob::SO2StateSpace::StateType>(index)->value = goalState[index];
 	}
 
 	//Eventually this will be where I do validity checking 
-	si->setStateValidityChecker(ob::StateValidityCheckerPtr(new SO26ValidityChecker(si, nodes, obstacleMesh)));
+	si->setStateValidityChecker(ob::StateValidityCheckerPtr(new SO26ValidityChecker(si, (unsigned int) robot_number, axis_information, obstacleMeshes)));
 
 	//Code from the box: set up a problem, solve it. Resolution parameters are changed here. 
 	ob::ProblemDefinitionPtr pdef(new ob::ProblemDefinition(si));
@@ -237,7 +320,7 @@ static Nested<real> plan(unsigned int links, double robot_number, Array<real> go
 
     // create a planner for the defined space
    	og::RRTConnect* solver  = new og::RRTConnect(si);
-   	solver->setRange(.1);
+   	solver->setRange(range);
     ob::PlannerPtr planner(solver);
     planner->setProblemDefinition(pdef);
     planner->setup();
@@ -254,8 +337,7 @@ static Nested<real> plan(unsigned int links, double robot_number, Array<real> go
     ob::PlannerStatus solved = planner->solve(10.0);
 	Nested<real,false> path;
 	vector<real> step_vector;
-
-
+	cout << si->getStateDimension() << endl;
     if (solved)
     {
         ob::PathPtr solution_path = pdef->getSolutionPath();
@@ -272,7 +354,7 @@ static Nested<real> plan(unsigned int links, double robot_number, Array<real> go
         }
 
         cout << "Found solution" << endl;
-        //solution_path->print(cout);
+		//solution_path->print(cout);
 
     } else {
         cout << "No solution found" << endl;
