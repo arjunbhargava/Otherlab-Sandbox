@@ -136,6 +136,13 @@ class Arm(object):
     m.update_normals()
     return m
 
+  def submeshes(self):
+    meshes = []
+    for node in self.nodes:
+      tm = node.mesh().copy()
+      meshes.append(tm)
+    return meshes
+
   @cache_method
   def lists(self):
     ls = []

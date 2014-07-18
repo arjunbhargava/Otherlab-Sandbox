@@ -23,7 +23,7 @@ angle_path = [];
 
 armset1 = System([Arm('a1',6,effector_functions)])
 
-obstacle_arm_frame = Frames(array([1543,0,0]),Rotation.from_angle_axis(pi,array([0,0,1])))
+obstacle_arm_frame = Frames(array([1543,0,0]),Rotation.from_angle_axis(0,array([0,0,1])))
 obstacle_arm = System([Arm('obstacle',6,effector_functions,bf=obstacle_arm_frame)])
 
 armset_dummy = System([Arm('a2',6,effector_functions)])
@@ -69,10 +69,12 @@ def view():
 
   both_meshes = []
   for arm in armset1.arms:
-    both_meshes.append(arm.mesh())
+    both_meshes.append(arm.submeshes())
   for arm in obstacle_arm.arms:
-    both_meshes.append(arm.mesh())
+    both_meshes.append(arm.submeshes())
   print both_meshes
+
+
 
   if len(both_goals) == dimension:
     angle_path = plan(6,2, both_goals, both_origins, both_meshes)
