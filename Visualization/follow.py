@@ -272,7 +272,7 @@ class System():
     #ang = f.r.euler_angles()
     #return ang
 
-frame2 = Frames(array([2043.,0.,0.]),Rotation.from_angle_axis(pi,array([0.,0.,1.])))
+#frame2 = Frames(array([2043.,0.,0.]),Rotation.from_angle_axis(pi,array([0.,0.,1.])))
 
 effector_functions = [end_effector,normal,up]
 
@@ -303,10 +303,11 @@ class KukaScene(Scene):
       GL.glEnable(GL.GL_DEPTH_TEST)
 
     GL.glDisable(GL.GL_DEPTH_TEST)
-    GL.glPointSize(5)
+    GL.glPointSize(50)
     GL.glBegin(GL.GL_POINTS)
     GL.glColor3f(0,0,1)
     GL.glVertex3f(716, 397, 1427)
+    GL.glVertex3f(1455, 0, 1320)
     GL.glEnd()
     GL.glEnable(GL.GL_DEPTH_TEST)
 

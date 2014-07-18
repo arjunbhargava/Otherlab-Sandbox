@@ -25,8 +25,8 @@ armset1 = System([Arm('a1',6,effector_functions)])
 armset_dummy = System([Arm('a2',6,effector_functions)])
 
 obstacle_arm_frame = Frames(array([2543,0,0]),Rotation.from_angle_axis(pi,array([0,0,1])))
-obstacle_arm = Arm('obstacle',6,[],bf=obstacle_arm_frame)
-dummy2 = Arm('obstacle',6,[],bf=obstacle_arm_frame)
+obstacle_arm = Arm('obstacle',6,effector_functions,bf=obstacle_arm_frame)
+dummy2 = Arm('obstacle',6,effector_functions,bf=obstacle_arm_frame)
 
 def update():
   frame = props.get("frame")()
@@ -34,6 +34,7 @@ def update():
   for arm in armset1.arms:
     for i, node in enumerate(arm.nodes):
       node.rotation.set(float(state[i]) * 180/pi)
+
 
 
 def view():
@@ -50,14 +51,20 @@ def view():
 
 
   goal = armset_dummy.update_effector()
-  dimension = 6
+  goal2 = System([dummy2]).update_effector()
+  both_goals = append(goal, goal2)
+  print both_goals
+
+  dimension = 12
 
   robot_origins = asarray(get_origins())
+  robot_origins2 = asarray(get_origins()) + array([2543, 0, 0])
+  both_origins = array([robot_origins, robot_origins2])
 
   print both_origins
 
   if len(goal) == dimension:
-    angle_path = plan(6,1., goal, robot_origins, obstacle_arm.mesh())
+    angle_path = plan(6,2, goal, both_origins, obstacle_arm.mesh())
     props.get("last_frame").set(len(angle_path))
   
   main.resize_timeline(100);
