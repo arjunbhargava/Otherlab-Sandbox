@@ -22,11 +22,12 @@ angle_path = [];
 '''
 
 armset1 = System([Arm('a1',6,effector_functions)])
-armset_dummy = System([Arm('a2',6,effector_functions)])
 
-obstacle_arm_frame = Frames(array([2543,0,0]),Rotation.from_angle_axis(pi,array([0,0,1])))
-obstacle_arm = Arm('obstacle',6,effector_functions,bf=obstacle_arm_frame)
-dummy2 = Arm('obstacle',6,effector_functions,bf=obstacle_arm_frame)
+obstacle_arm_frame = Frames(array([1543,0,0]),Rotation.from_angle_axis(pi,array([0,0,1])))
+obstacle_arm = System([Arm('obstacle',6,effector_functions,bf=obstacle_arm_frame)])
+
+armset_dummy = System([Arm('a2',6,effector_functions)])
+dummy2 = Arm('obstacle2',6,effector_functions,bf=obstacle_arm_frame)
 
 def update():
   frame = props.get("frame")()
@@ -34,6 +35,9 @@ def update():
   for arm in armset1.arms:
     for i, node in enumerate(arm.nodes):
       node.rotation.set(float(state[i]) * 180/pi)
+  for arm in obstacle_arm.arms:
+    for j , node in enumerate(arm.nodes):
+      node.rotation.set(float(state[j+6] * 180/pi))
 
 
 
@@ -44,7 +48,7 @@ def view():
   main = MainWindow(props)
   #We're going to add some windows
   ks = KukaScene(armset1)
-  ks2 = KukaScene(System([dummy2]))
+  ks2 = KukaScene(obstacle_arm)
   main.view.add_scene("kuka",ks)
   main.view.add_scene("kuka",ks2)
   main.view.show_all(True)
@@ -58,13 +62,21 @@ def view():
   dimension = 12
 
   robot_origins = asarray(get_origins())
-  robot_origins2 = asarray(get_origins()) + array([2543, 0, 0])
+  robot_origins2 = asarray(get_origins()) + array([1543, 0, 0])
   both_origins = array([robot_origins, robot_origins2])
 
   print both_origins
 
-  if len(goal) == dimension:
-    angle_path = plan(6,2, goal, both_origins, obstacle_arm.mesh())
+  both_meshes = []
+  for arm in armset1.arms:
+    both_meshes.append(arm.mesh())
+  for arm in obstacle_arm.arms:
+    both_meshes.append(arm.mesh())
+  print both_meshes
+
+  if len(both_goals) == dimension:
+    angle_path = plan(6,2, both_goals, both_origins, both_meshes)
+    print angle_path
     props.get("last_frame").set(len(angle_path))
   
   main.resize_timeline(100);
