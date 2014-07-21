@@ -26,6 +26,7 @@
 #include <fstream>
 #include <iostream>
 
+#define Xi(i) tuple(i,X[i])
 
 //using namespace std;
 namespace ob = ompl::base;
@@ -37,9 +38,10 @@ using std::cout;
 using std::endl;
 
 namespace other {
+#define Xi(i) tuple(i,X[i])
 
 const double pi = boost::math::constants::pi<double>();
-int sample_counter = 0;
+
 double upper_kr16_bounds [] = {185, 35, 154, 350, 130, 350};
 double lower_kr16_bounds [] = {-185, -155,-130, -350, -130, -350};
 
@@ -106,81 +108,62 @@ with the current object in real space being the other Kuka robot. */
 class SO26ValidityChecker : public ob::StateValidityChecker
 {
 	public:
-	    SO26ValidityChecker(const ob::SpaceInformationPtr &si, unsigned int robot_number, vector<link_t> &axis_information, 
-	     vector<vector<Ref<TriMesh>>> meshes):
+	    SO26ValidityChecker(const ob::SpaceInformationPtr &si, unsigned int robot_number, vector<link_t> &axis_information,  vector<vector<Ref<TriMesh>>> meshes):
 			ob::StateValidityChecker(si),  meshes_(meshes), axis_information_(axis_information), robot_number_(robot_number),
 				stateDimension(si->getStateDimension())
 	    {
-	    	for(unsigned int i = 0; i < robot_number; i++) {
-	    		for(unsigned int j = 0; j < meshes[i].size(); j++) {
-					int index = i * (stateDimension/robot_number_)  + j;
-					face_trees.push_back(meshes_[i][j]->face_tree());
-					positions.push_back(face_trees[index]->X.copy());
-				}
-			}
-			cout << positions[0][0] << " , " << positions[6][0] << endl;
-			cout << positions[1][0] << ", " << positions[7][0] << endl;
- 		 }
-
-
-
+	    }
+	     
 	    bool isValid(const ob::State *state) const
-	    {	
+	    {
 	    	Array<real> joint_angles(stateDimension);
 			const ChainSpace::StateType *cstate1 = static_cast<const ChainSpace::StateType*>(state); 
 			for(unsigned int i = 0; i < stateDimension; ++i) {
 				double angle = cstate1->components[i]->as<ob::SO2StateSpace::StateType>()->value * 180/pi;
 				int index = i%(stateDimension/robot_number_);
 				if(angle > upper_kr16_bounds[index] || angle < lower_kr16_bounds[index]) {
-					cout << "Angle failure on linkage " << index << endl;
 					return false;
 				}
 				joint_angles[i] = angle * pi/180;
 			}
 			
-			generate_mesh(joint_angles);
-			if(mesh_self_collisions_wrapper()) return false;
-			return !mesh_other_collisions_wrapper();
+			return !mesh_collisions_wrapper(generate_mesh(joint_angles));
 	    }
 
 	private:
 
-		bool mesh_collisions(Ref<SimplexTree<Vector<real,3>,2>> face_tree1, Ref<SimplexTree<Vector<real,3>,2>> face_tree2) const {
-			GEODE_ASSERT(face_tree1->leaf_size==4);
-			GEODE_ASSERT(face_tree2->leaf_size==4);
+		bool mesh_collisions(Ref<TriMesh> mesh1, Ref<TriMesh> mesh2) const {
+			auto face_tree1 = mesh1->face_tree();
+			auto face_tree2 = mesh2->face_tree();
+			//GEODE_ASSERT(face_tree1->leaf_size==1);
+			//GEODE_ASSERT(face_tree2->leaf_size==1);
 			auto X = face_tree1->X;
-			auto X2 = face_tree2->X;
 			const TriangleSoup& faces = face_tree1->mesh;
 			const TriangleSoup& face2 = face_tree2->mesh;
-
-			//Find intersectino between faces
+		    // Find ef_vertices
 		    struct {
 		      const Ref<const SimplexTree<Vector<real,3>,2>> face_tree1;
 		      const Ref<const SimplexTree<Vector<real,3>,2>> face_tree2;
 		      const RawArray<const Vector<real,3>> X;
-		      const RawArray<const Vector<real,3>> X2;
 		      int counter;
 
 		      bool cull(const int ne, const int nf) const { return false; }
 
 		      void leaf(const int ne, const int nf) {
-		      	auto leaf_size = face_tree1->leaf_size;
-		      	for(auto i = 0; i < leaf_size; i++) {
-			        const int face1 = face_tree1->prims(ne)[i],
-			                  face2 = face_tree2->prims(nf)[i];
-			        const auto fv1 = face_tree1->mesh->elements[face1];
-			        const auto fv2 = face_tree2->mesh->elements[face2];
-			           
-			        if (triangle_triangle_intersection(X[fv1.x], X[fv1.y], X[fv1.z], X2[fv2.x], X2[fv2.y], X2[fv2.z])) 		
-						throw -1;
-				}
+		        const int face1 = face_tree1->prims(ne)[0],
+		                  face2 = face_tree2->prims(nf)[0];
+		        const auto fv1 = face_tree1->mesh->elements[face1];
+		        const auto fv2 = face_tree2->mesh->elements[face2];
+		           
+		        if (triangle_triangle_intersection(X[fv1.x], X[fv1.y], X[fv1.z],X[fv2.x],X[fv2.y],X[fv2.z])) 		
+					throw -1;
 		      
 		      }
-		    } helper({face_tree1, face_tree2, X, X2, 0});
+		    } helper({face_tree1, face_tree2, X, 0});
 
 		    try {
 			    double_traverse(*face_tree1,*face_tree2,helper);
-			} catch(int e) {
+			} catch(int error) {
 				return true;
 			}		
 
@@ -188,57 +171,42 @@ class SO26ValidityChecker : public ob::StateValidityChecker
 		}
 		
 
-		bool mesh_other_collisions_wrapper() const {
-
-			for(unsigned int i = 0; i < stateDimension/robot_number_; i++) {
-				for(unsigned int j = i; j < stateDimension/robot_number_; j++) {
-					int index = i;
-					int index2 = (stateDimension/robot_number_) + j;
-					if(mesh_collisions(face_trees[index], face_trees[index2])) {
-						cout << "Got collision on  meshes:" << i << ", " << j << endl;
-						cout << "Mesh 1 has: " << meshes_[0][i]->n_faces() << " faces. Mesh 2 has: " << meshes_[0][j]->n_faces() << " faces." << endl;
-						return true;
-					}
-				}
-			}	
-			return false;
-		}
-
-		bool mesh_self_collisions_wrapper() const {
+		bool mesh_collisions_wrapper(vector<Ref<TriMesh>> updated_meshes) const {
 			
 			//First let's just see if we can resolve self-collisions
 			int counter = 0;
 			for(unsigned int i = 0; i < robot_number_; i++) {
 				for(unsigned int j = 0; j < stateDimension/robot_number_-1; j++) {
 					for(unsigned int k = j+1; k < stateDimension/robot_number_; k++) {
-						if(k-j > 1) {
-							int index = i * (stateDimension/robot_number_) + j;
-							int index2 = i * (stateDimension/robot_number_) + k;
-							if(mesh_collisions(face_trees[index], face_trees[index2])) {
-								cout << "Got self collision comparing robot" << i << "And meshes:" << j << ", " << k << endl;
-								cout << "Mesh 1 has: " << meshes_[i][j]->n_faces() << " faces. Mesh 2 has: " << meshes_[i][k]->n_faces() << " faces." << endl;
+						if( k-j > 1) {
+							int index = i * stateDimension/robot_number_ + j; 
+							int index2 = i * stateDimension/robot_number_ + k;
+
+							if(mesh_collisions(updated_meshes[index], updated_meshes[index2]))
 								return true;
-							}
 						}
 					}	
 				}
 			}
-			//cout << "This time, there were " << counter << " self collisions" << endl;
 			return false;
 		}
   		
-		void generate_mesh(Array<real> joint_angles) const { 
+    
 
+		vector<Ref<TriMesh>> generate_mesh(Array<real> joint_angles) const { 
+
+			vector<Ref<TriMesh>> updated_meshes;
 			vector<Frame<Vector<real,3>>> frames = frame_from_state(joint_angles);
 
 			for(unsigned int i = 0; i < robot_number_; i++) {
 				for(unsigned int j = 0; j < meshes_[i].size(); j++) {
 					int index = i * (stateDimension/robot_number_)  + j;
 					Frame<Vector<real,3>> this_frame = frames[index];
-					face_trees[index]->X.const_cast_().copy(this_frame * positions[index]);
-					face_trees[index]->update();
+					updated_meshes.push_back(meshes_[i][j]);
+				//	updated_meshes.back()->transform(this_frame.matrix());
 				}
 			}
+			return updated_meshes;
 		}
 
 		vector<Frame<Vector<real, 3>>> frame_from_state(const Array<real> &state_angles) const {
@@ -272,21 +240,24 @@ class SO26ValidityChecker : public ob::StateValidityChecker
 			return frames;
 		}
 
+//		bool computeDistance(Vector<real,3> effector_position) const {
+//			return true;//auto difference = mesh_tree->distance(effector_position);
+			//return difference > 10;
+//		}
+
 	protected: 
 		vector<vector<Ref<TriMesh>>> meshes_;
+		vector<Ref<SimplexTree<Vector<real,3>,2>>> mesh_trees;
 		vector<link_t> axis_information_;
 		unsigned int robot_number_;
 		unsigned int stateDimension;
-		vector<Ref<SimplexTree<Vector<real,3>,2>>> face_trees;
-		vector<Array<Vector<real, 3>>> positions;
-
+		int max_distance; 
 };
 
 /* Initializes the axes for each linkage (sets up frames) on which the forward kinematics
 are eventually computed. These are then used for validity checking. */
 
-void initializeAxes(ob::SpaceInformationPtr &si, vector<link_t> &axis_information, Array<Vector<real,3>,2> &offsets, 
-	double robot_number) {
+void initializeAxes(ob::SpaceInformationPtr &si, vector<link_t> &axis_information, Array<Vector<real,3>,2> &offsets, double robot_number) {
 	
 	Vector<real, 3> x_axis(1,0,0);
 	Vector<real, 3> y_axis(0,1,0);
@@ -318,13 +289,13 @@ void initializeAxes(ob::SpaceInformationPtr &si, vector<link_t> &axis_informatio
 }
 
 static Nested<real> plan(unsigned int links, double robot_number, Array<real> goalState, Array<Vector<real,3>,2> parsed_offsets, 
-	vector<vector<Ref<TriMesh>>> obstacleMeshes, double resolution, double range, double solve_time) {
+	vector<vector<Ref<TriMesh>>> obstacleMeshes, double range) {
 
 	//Create a subspace with the given number of links
 	//Create the space information pointer that everything else takes...
 	ob::StateSpacePtr space(new ChainSpace(links, robot_number)); 
 	ob::SpaceInformationPtr si(new ob::SpaceInformation(space));
-	si->setStateValidityCheckingResolution(resolution);
+	si->setStateValidityCheckingResolution(.0000001);
 
 	//Set up the node structure from the given files. 
 	vector<link_t> axis_information;
@@ -335,11 +306,13 @@ static Nested<real> plan(unsigned int links, double robot_number, Array<real> go
 
 	for(unsigned int index = 0; index < si->getStateDimension(); ++index) {
 		start->as<ob::SO2StateSpace::StateType>(index)->value = 0;
+		//if(index == 6) // I don't really like this, I'll start the robots looking the same way in later iterations.
+		//	start->as<ob::SO2StateSpace::StateType>(index)->value = -coutpi;
 		goal->as<ob::SO2StateSpace::StateType>(index)->value = goalState[index];
 	}
 
 	//Eventually this will be where I do validity checking 
-	si->setStateValidityChecker(ob::StateValidityCheckerPtr(new SO26ValidityChecker(si, 2, axis_information, obstacleMeshes)));
+	si->setStateValidityChecker(ob::StateValidityCheckerPtr(new SO26ValidityChecker(si, (unsigned int) robot_number, axis_information, obstacleMeshes)));
 
 	//Code from the box: set up a problem, solve it. Resolution parameters are changed here. 
 	ob::ProblemDefinitionPtr pdef(new ob::ProblemDefinition(si));
@@ -361,7 +334,7 @@ static Nested<real> plan(unsigned int links, double robot_number, Array<real> go
     cout << "We've finished printing the problem settings, printing solution..." << endl;
 
     // attempt to solve the problem within ten seconds of planning time
-    ob::PlannerStatus solved = planner->solve(solve_time);
+    ob::PlannerStatus solved = planner->solve(10.0);
 	Nested<real,false> path;
 	vector<real> step_vector;
 	cout << si->getStateDimension() << endl;
