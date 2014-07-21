@@ -6,7 +6,7 @@ from geode import *
 
 from numpy import *
 from numpy.linalg import *
-
+from math import *
 from geode.openmesh import *
 from geode.vector import *
 
@@ -59,13 +59,13 @@ class Node(object):
 
 
 def end_effector(node):
-  return node.frame().t + node.frame().r*array([1.,0,0])*100.
+  return node.frame().t + node.frame().r*array([1.,0,0])*25 + node.frame().r*array([0., 0, 1.])*sqrt(25.**2 + 25.**2)
 
 def normal(node):
-  return node.frame().t + node.frame().r*array([1.,0,0])*50.
+  return node.frame().t + node.frame().r*array([1.,0,0])*25 + node.frame().r*array([0., 1., 0.])*-25 + node.frame().r*array([0., 0., 1.])*-25;#end_effector(node) 
 
 def up(node):
-  return end_effector(node) + node.frame().r*array([0,0,1])*50.
+  return node.frame().t + node.frame().r*array([1.,0,0])*25 + node.frame().r*array([0., 1., 0.])*25 + node.frame().r*array([0., 0., 1.])*-25;#end_effector(node) 
 
 class Arm(object):
   def __init__(self,n,dof,eff_functions,bf=Frames(array([0.,0.,0.]),Rotation.from_angle_axis(0.,array([1.,0.,0.])))):
@@ -140,6 +140,7 @@ class Arm(object):
     meshes = []
     for node in self.nodes:
       tm = node.mesh().copy()
+  #    tm.transform(node.frame().matrix());
       meshes.append(tm)
     return meshes
 
@@ -194,8 +195,9 @@ class System():
   @cache
   def targets():
     t = 0#props.get("frame")()*.01
-    p1 = array([817,400*cos(t),1425 + 300*sin(t)])
-    return array([p1,p1+array([-50.,0,0.]),p1+array([0.,0.,50.])])
+    #p1 = array([817,400*cos(t),1425 + 300*sin(t)])
+    p1 = array([700, -1000, 1500])
+    return array([p1+array([0, 0, sqrt(25**2 + 25**2)]), p1+array([0,-25,-25.]),p1+array([0.,25.,-25.,])])
     #return array([p1,p1+array([0,0,50.]),p1,p1-array([0,0,50.])])
 
   def clamp(self, w,d,norm_type=None):
@@ -282,6 +284,7 @@ class System():
 #frame2 = Frames(array([2043.,0.,0.]),Rotation.from_angle_axis(pi,array([0.,0.,1.])))
 
 effector_functions = [end_effector,normal,up]
+effector_functions2 = [normal, end_effector, up]
 
 #arms = [Arm('welding',6,effector_functions),Arm('fixturing',6,effector_functions,frame2) ]
 
@@ -315,6 +318,7 @@ class KukaScene(Scene):
     GL.glColor3f(0,0,1)
     GL.glVertex3f(716, 397, 1427)
     GL.glVertex3f(1455, 0, 1320)
+    GL.glVertex3f(1000,0,500)
     GL.glEnd()
     GL.glEnable(GL.GL_DEPTH_TEST)
 

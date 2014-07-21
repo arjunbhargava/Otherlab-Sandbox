@@ -21,13 +21,14 @@ angle_path = [];
 2. Render the path correctly. 
 '''
 
-armset1 = System([Arm('a1',6,effector_functions)])
+armset1 = System([Arm('a1',6, effector_functions)])
+location = array([1500, 0,0])
 
-obstacle_arm_frame = Frames(array([1543,0,0]),Rotation.from_angle_axis(0,array([0,0,1])))
-obstacle_arm = System([Arm('obstacle',6,effector_functions,bf=obstacle_arm_frame)])
+obstacle_arm_frame = Frames(location,Rotation.from_angle_axis(0,array([0,0,1])))
+obstacle_arm = System([Arm('obstacle',6,effector_functions2,bf=obstacle_arm_frame)])
 
 armset_dummy = System([Arm('a2',6,effector_functions)])
-dummy2 = Arm('obstacle2',6,effector_functions,bf=obstacle_arm_frame)
+dummy2 = Arm('obstacle2',6,effector_functions2,bf=obstacle_arm_frame)
 
 def update():
   frame = props.get("frame")()
@@ -44,6 +45,7 @@ def update():
 def view():
   # Set up main window
   global angle_path
+  global location
   app = QEApp(sys.argv,True)
   main = MainWindow(props)
   #We're going to add some windows
@@ -54,15 +56,17 @@ def view():
   main.view.show_all(True)
 
 
-  goal = armset_dummy.update_effector()
-  goal2 = System([dummy2]).update_effector()
+  target_point = ...
+  target_axis = 
+  goal = armset_dummy.solve_ik(target_point, target_axis)
+  goal2 = System([dummy2]).solve_ik(target_point, target_axis)
   both_goals = append(goal, goal2)
   print both_goals
 
   dimension = 12
 
   robot_origins = asarray(get_origins())
-  robot_origins2 = asarray(get_origins()) + array([1543, 0, 0])
+  robot_origins2 = asarray(get_origins()) + location;
   both_origins = array([robot_origins, robot_origins2])
 
   print both_origins
@@ -74,11 +78,8 @@ def view():
     both_meshes.append(arm.submeshes())
   print both_meshes
 
-
-
   if len(both_goals) == dimension:
-    angle_path = plan(6,2, both_goals, both_origins, both_meshes)
-    print angle_path
+    angle_path = plan(6,2, both_goals, both_origins, both_meshes, .001, .05, 100.0)
     props.get("last_frame").set(len(angle_path))
   
   main.resize_timeline(100);
