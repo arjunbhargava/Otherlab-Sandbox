@@ -107,9 +107,10 @@ class SO26ValidityChecker : public ob::StateValidityChecker
 {
 	public:
 	    SO26ValidityChecker(const ob::SpaceInformationPtr &si, unsigned int robot_number, vector<link_t> &axis_information, 
-	     vector<vector<Ref<TriMesh>>> meshes):
-			ob::StateValidityChecker(si),  meshes_(meshes), axis_information_(axis_information), robot_number_(robot_number),
-				stateDimension(si->getStateDimension())
+	     vector<vector<Ref<TriMesh>>> meshes, vector<Ref<TriMesh>> obstacleMeshes, double initial_angle, vector<Vector<real,3>> initial_location):
+			ob::StateValidityChecker(si),  meshes_(meshes), obstacleMeshes_(obstacleMeshes),axis_information_(axis_information),
+			 robot_number_(robot_number), stateDimension(si->getStateDimension()), 
+			 initial_angle_(initial_angle), initial_location_(initial_location)
 	    {
 	    	for(unsigned int i = 0; i < robot_number; i++) {
 	    		for(unsigned int j = 0; j < meshes[i].size(); j++) {
@@ -118,8 +119,14 @@ class SO26ValidityChecker : public ob::StateValidityChecker
 					positions.push_back(face_trees[index]->X.copy());
 				}
 			}
+
 			cout << positions[0][0] << " , " << positions[6][0] << endl;
 			cout << positions[1][0] << ", " << positions[7][0] << endl;
+
+			for(unsigned int i = 0; i < obstacleMeshes.size(); i++) {
+				obstacle_trees.push_back(obstacleMeshes_[i]->face_tree());
+				obstacle_positions.push_back(obstacle_trees[i]->X.copy());
+			}
  		 }
 
 
@@ -139,15 +146,25 @@ class SO26ValidityChecker : public ob::StateValidityChecker
 			}
 			
 			generate_mesh(joint_angles);
+		//	cout << face_trees[0]->X[0] << " , " << face_trees[6]->X[0] << endl;
+		//	cout << face_trees[1]->X[0] << " , " << face_trees[7]->X[0] << endl;
+			//for(int i = 0; i < face_trees[11]->X.size(); i++) {
+			//	cout << face_trees[11]->X[i] << endl;
+			//}
+			//exit(0);
+			//Modify obstacle mesh if so desired... No function currently written for that. Pretty simple tho
 			if(mesh_self_collisions_wrapper()) return false;
-			return !mesh_other_collisions_wrapper();
+			if(mesh_other_collisions_wrapper()) return false;
+			if(obstacleMeshes_.size() > 0)
+				return !robot_other_collisions_wrapper();
+			return true;
 	    }
 
 	private:
 
 		bool mesh_collisions(Ref<SimplexTree<Vector<real,3>,2>> face_tree1, Ref<SimplexTree<Vector<real,3>,2>> face_tree2) const {
-			GEODE_ASSERT(face_tree1->leaf_size==4);
-			GEODE_ASSERT(face_tree2->leaf_size==4);
+			//GEODE_ASSERT(face_tree1->leaf_size==4);
+			//GEODE_ASSERT(face_tree2->leaf_size==4);
 			auto X = face_tree1->X;
 			auto X2 = face_tree2->X;
 			const TriangleSoup& faces = face_tree1->mesh;
@@ -164,15 +181,19 @@ class SO26ValidityChecker : public ob::StateValidityChecker
 		      bool cull(const int ne, const int nf) const { return false; }
 
 		      void leaf(const int ne, const int nf) {
-		      	auto leaf_size = face_tree1->leaf_size;
-		      	for(auto i = 0; i < leaf_size; i++) {
-			        const int face1 = face_tree1->prims(ne)[i],
-			                  face2 = face_tree2->prims(nf)[i];
-			        const auto fv1 = face_tree1->mesh->elements[face1];
-			        const auto fv2 = face_tree2->mesh->elements[face2];
-			           
-			        if (triangle_triangle_intersection(X[fv1.x], X[fv1.y], X[fv1.z], X2[fv2.x], X2[fv2.y], X2[fv2.z])) 		
-						throw -1;
+		      	auto leaf_size1 = face_tree1->leaf_size;
+		      	auto leaf_size2 = face_tree2->leaf_size;
+
+		      	for(auto i = 0; i < leaf_size1; i++) {
+		      		for(auto j = 0; j < leaf_size2; j++) {
+				        const int face1 = face_tree1->prims(ne)[i],
+				                  face2 = face_tree2->prims(nf)[j];
+				        const auto fv1 = face_tree1->mesh->elements[face1];
+				        const auto fv2 = face_tree2->mesh->elements[face2];
+				           
+				        if (triangle_triangle_intersection(X[fv1.x], X[fv1.y], X[fv1.z], X2[fv2.x], X2[fv2.y], X2[fv2.z])) 		
+							throw -1;
+					}
 				}
 		      
 		      }
@@ -187,9 +208,19 @@ class SO26ValidityChecker : public ob::StateValidityChecker
 		    return false;
 		}
 		
+		bool robot_other_collisions_wrapper() const {
+			for(unsigned int i = 0; i < stateDimension; i++) {
+				for(unsigned int j = 0; j < obstacle_trees.size(); j++) {
+					if(mesh_collisions(face_trees[i], obstacle_trees[j])) {
+						cout << "Hit a bunny" << endl;
+						return true;
+					}
+				}
+			}
+			return false;
+		}
 
 		bool mesh_other_collisions_wrapper() const {
-
 			for(unsigned int i = 0; i < stateDimension/robot_number_; i++) {
 				for(unsigned int j = i; j < stateDimension/robot_number_; j++) {
 					int index = i;
@@ -201,6 +232,7 @@ class SO26ValidityChecker : public ob::StateValidityChecker
 					}
 				}
 			}	
+
 			return false;
 		}
 
@@ -252,11 +284,17 @@ class SO26ValidityChecker : public ob::StateValidityChecker
 				int factor = axis_information_[i].negate_rotation ? -1 : 1; //For Kuka robots to move how we want them to
 
 				if(index == 0) { //Comes back in here when it's the nTh base. 
-					f.t = axis_information_[i].offsets; //Offset of the base shouldn't ever change..
-					//The axis doesn't either, but the rotation angle itself does.  
+					f.t = axis_information_[i].offsets + initial_location_[0]; //Offset of the base shouldn't ever change..
+					//The axis doesn't either, but the rotation angle itself does.  We're gonna change that now. 
 					auto rotation_object = Rotation<Vector<real,3>>(factor * state_angles[i], axis_information_[i].axis); 
 					f.r = rotation_object;
-					frames.push_back(f);
+					if(i == 6) {
+						auto axis_rotation_object = Rotation<Vector<real,3>>(initial_angle_, axis_information_[i].axis);
+					//	printVector(axis_information_[i].offsets);
+					//	printVector(initial_location_[1]);
+						frames.push_back(Frame<Vector<real, 3>>(axis_rotation_object * axis_information_[i].offsets + initial_location_[1], rotation_object * axis_rotation_object));
+					} else 
+						frames.push_back(f);
 					
 				} else {
 					//If it's not the first link, then get the previous link 
@@ -267,6 +305,9 @@ class SO26ValidityChecker : public ob::StateValidityChecker
 					//Your position is the offset of the other guy + ABSOLUTE rotation * your offset. Your absolute rotation 
 					//is the previous absolute rotation multiplied by your relative rotation. Note the order of matrix multiplication
 					frames.push_back(Frame<Vector<real,3>>(f.t + f.r * axis_information_[i].offsets, rotation_object * f.r ));
+					//for(int m = 0; m < 3; m++) {
+					//cout << f.t[m]<< endl;
+					//}
 				}		
 			}		
 			return frames;
@@ -274,16 +315,23 @@ class SO26ValidityChecker : public ob::StateValidityChecker
 
 	protected: 
 		vector<vector<Ref<TriMesh>>> meshes_;
+		vector<Ref<TriMesh>> obstacleMeshes_;
 		vector<link_t> axis_information_;
 		unsigned int robot_number_;
 		unsigned int stateDimension;
 		vector<Ref<SimplexTree<Vector<real,3>,2>>> face_trees;
+		vector<Ref<SimplexTree<Vector<real,3>,2>>> obstacle_trees;
 		vector<Array<Vector<real, 3>>> positions;
+		vector<Array<Vector<real, 3>>> obstacle_positions;
+		double initial_angle_;
+		vector<Vector<real,3>> initial_location_;
 
 };
 
 /* Initializes the axes for each linkage (sets up frames) on which the forward kinematics
 are eventually computed. These are then used for validity checking. */
+
+
 
 void initializeAxes(ob::SpaceInformationPtr &si, vector<link_t> &axis_information, Array<Vector<real,3>,2> &offsets, 
 	double robot_number) {
@@ -294,6 +342,14 @@ void initializeAxes(ob::SpaceInformationPtr &si, vector<link_t> &axis_informatio
 
 	for(int o = 0; o < (int) robot_number; ++o) {
 		auto robot_offsets = offsets[o];
+		//if((initial_angle != 0 || location.size() > 0) && o == 1) {
+		//	Rotation<Vector<real, 3>> axis_rotation(initial_angle, z_axis);
+		//	Frame<Vector<real, 3>> new_location(location, axis_rotation);
+		//	robot_offsets = new_location * robot_offsets;	
+		//xw}
+		//for(int m = 0; m < 6; m++) {
+		//		cout << robot_offsets[m] << endl;
+	//		}	
 		for(unsigned int i = 0; i < si->getStateDimension()/robot_number; ++i) {
 			link_t this_node;
 			this_node.rotation_min = lower_kr16_bounds[i];
@@ -317,8 +373,9 @@ void initializeAxes(ob::SpaceInformationPtr &si, vector<link_t> &axis_informatio
 	}
 }
 
-static Nested<real> plan(unsigned int links, double robot_number, Array<real> goalState, Array<Vector<real,3>,2> parsed_offsets, 
-	vector<vector<Ref<TriMesh>>> obstacleMeshes, double resolution, double range, double solve_time) {
+static Nested<real> plan(unsigned int links, double robot_number, vector<Array<real>> goalState, Array<Vector<real,3>,2> parsed_offsets, 
+	vector<vector<Ref<TriMesh>>> robotMeshes, vector<Ref<TriMesh>> obstacleMeshes, double resolution, double range, double solve_time, 
+	double initial_angle, vector<Vector<real, 3>> initial_location) {
 
 	//Create a subspace with the given number of links
 	//Create the space information pointer that everything else takes...
@@ -333,63 +390,89 @@ static Nested<real> plan(unsigned int links, double robot_number, Array<real> go
 	ob::ScopedState<ob::CompoundStateSpace> start(space); 
 	ob::ScopedState<ob::CompoundStateSpace> goal(space);
 
-	for(unsigned int index = 0; index < si->getStateDimension(); ++index) {
-		start->as<ob::SO2StateSpace::StateType>(index)->value = 0;
-		goal->as<ob::SO2StateSpace::StateType>(index)->value = goalState[index];
-	}
-
 	//Eventually this will be where I do validity checking 
-	si->setStateValidityChecker(ob::StateValidityCheckerPtr(new SO26ValidityChecker(si, 2, axis_information, obstacleMeshes)));
-
-	//Code from the box: set up a problem, solve it. Resolution parameters are changed here. 
-	ob::ProblemDefinitionPtr pdef(new ob::ProblemDefinition(si));
-	pdef->setStartAndGoalStates(start, goal);
-
-    // create a planner for the defined space
-   	og::RRTConnect* solver  = new og::RRTConnect(si);
-   	solver->setRange(range);
-    ob::PlannerPtr planner(solver);
-    planner->setProblemDefinition(pdef);
-    planner->setup();
-
-    cout << "We're now going to print the space settings" << endl;
-    si->printSettings(cout);
-
-    cout << "We're now going to print the problem settings" << endl;
-    pdef->print(cout);
-
-    cout << "We've finished printing the problem settings, printing solution..." << endl;
-
-    // attempt to solve the problem within ten seconds of planning time
-    ob::PlannerStatus solved = planner->solve(solve_time);
+	si->setStateValidityChecker(ob::StateValidityCheckerPtr(new SO26ValidityChecker(si, 2, axis_information, robotMeshes, obstacleMeshes, initial_angle, initial_location)));
+   
 	Nested<real,false> path;
-	vector<real> step_vector;
-	cout << si->getStateDimension() << endl;
-    if (solved)
-    {
-        ob::PathPtr solution_path = pdef->getSolutionPath();
-        og::PathGeometric geopath = dynamic_cast<og::PathGeometric &>(*solution_path);
-       	vector<ob::State *> path_states = geopath.getStates();
+		
+	for(size_t k = 0; k < goalState.size(); k++) {
+		og::RRTConnect* solver  = new og::RRTConnect(si);
+   		solver->setRange(range);	
+		ob::PlannerPtr planner(solver);
+	//Code from the box: set up a problem, solve it. Resolution parameters are changed here. 
+		ob::ProblemDefinitionPtr pdef(new ob::ProblemDefinition(si));
 
-        for(unsigned int i = 0; i < path_states.size(); ++i) {
-        	ChainSpace::StateType* cstate1 = static_cast<ChainSpace::StateType*>(path_states[i]);
-        	for(unsigned int j = 0; j < si->getStateDimension(); ++j) {
-        		step_vector.push_back(cstate1->components[j]->as<ob::SO2StateSpace::StateType>()->value);
-        	}
-      		path.append(asarray(step_vector).copy());
-      		step_vector.clear();
-        }
+		Array<real> substate = goalState[k];
+		ob::ScopedState<ob::CompoundStateSpace> new_goal(space);
+		for(unsigned int index = 0; index < si->getStateDimension(); ++index) {
+			if(substate[index] > pi) substate[index] = substate[index] - 2*pi;
+			else if(substate[index] < -pi) substate[index] = substate[index] + 2*pi;
 
-        cout << "Found solution" << endl;
-		//solution_path->print(cout);
+			if(k == 0) {
+			//	if(index != 6)
+					start->as<ob::SO2StateSpace::StateType>(index)->value = 0;
+			//	else start->as<ob::SO2StateSpace::StateType>(index)->value = pi;
 
-    } else {
-        cout << "No solution found" << endl;
-        step_vector.push_back(0);
-        path.append(asarray(step_vector).copy());
+			}
+			else start->as<ob::SO2StateSpace::StateType>(index)->value = goal->as<ob::SO2StateSpace::StateType>(index)->value;
+			new_goal->as<ob::SO2StateSpace::StateType>(index)->value = substate[index];
+		}
+
+		goal = new_goal;
+
+		cout << start << endl;
+		cout << goal << endl;
+
+		pdef->setStartAndGoalStates(start, goal);
+	    // create a planner for the defined space
+	    planner->setProblemDefinition(pdef);
+	    planner->setup();
+
+	  // cout << "We're now going to print the space settings" << endl;
+	    //si->printSettings(cout);
+
+	   // cout << "We're now going to print the problem settings" << endl;
+	   // pdef->print(cout);
+
+	    //cout << "We've finished printing the problem settings, printing solution..." << endl;
+	
+	    // attempt to solve the problem within ten seconds of planning time
+	    ob::PlannerStatus solved = planner->solve(solve_time);
+		vector<real> step_vector;
+
+	    if (solved)
+	    {
+	        ob::PathPtr solution_path = pdef->getSolutionPath();
+	        og::PathGeometric geopath = dynamic_cast<og::PathGeometric &>(*solution_path);
+	       	vector<ob::State *> path_states = geopath.getStates();
+
+	        for(unsigned int i = 0; i < path_states.size(); ++i) {
+	        	ChainSpace::StateType* cstate1 = static_cast<ChainSpace::StateType*>(path_states[i]);
+	        	for(unsigned int j = 0; j < si->getStateDimension(); ++j) {
+	        		step_vector.push_back(cstate1->components[j]->as<ob::SO2StateSpace::StateType>()->value);
+	        	}
+	      		path.append(asarray(step_vector).copy());
+	      		step_vector.clear();
+	        }
+
+	        cout << "Found solution" << endl;
+			//solution_path->print(cout);
+
+	    } else {
+	        cout << "No solution found" << endl;
+	        step_vector.push_back(0);
+	        path.append(asarray(step_vector).copy());
+	        exit(0);
+		}
 	}
-
+//	}
 	return path;
+}
+
+void printVector(Vector<real,3> vectortoprint) {
+	for(int i = 0; i < vectortoprint.size(); i++) {
+		cout << vectortoprint[i] << endl;
+	}
 }
 
 }

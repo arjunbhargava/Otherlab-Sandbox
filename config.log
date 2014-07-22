@@ -16,7 +16,7 @@ scons: Configure: The original builder output was:
   |
 scons: Configure: ".sconf_temp/conftest_0" is up to date.
 scons: Configure: The original builder output was:
-  |clang++ -o .sconf_temp/conftest_0 .sconf_temp/conftest_0.o -Lbuild/native/release/lib -Llib -L/usr/local/lib -L/usr/local/lib -L/usr/local/lib
+  |clang++ -o .sconf_temp/conftest_0 .sconf_temp/conftest_0.o -Lbuild/native/release/lib -Llib -L/opt/local/lib -L/usr/local/lib -L/usr/local/lib
   |
 scons: Configure: (cached) yes
 
@@ -40,7 +40,7 @@ scons: Configure: The original builder output was:
   |
 scons: Configure: ".sconf_temp/conftest_1" is up to date.
 scons: Configure: The original builder output was:
-  |clang++ -o .sconf_temp/conftest_1 .sconf_temp/conftest_1.o -Lbuild/native/release/lib -Llib -L/usr/local/lib -L/usr/local/lib -L/usr/local/lib -framework Accelerate -framework Accelerate
+  |clang++ -o .sconf_temp/conftest_1 .sconf_temp/conftest_1.o -Lbuild/native/release/lib -Llib -L/opt/local/lib -L/usr/local/lib -L/usr/local/lib -framework Accelerate -framework Accelerate
   |
 scons: Configure: (cached) yes
 
@@ -59,11 +59,11 @@ scons: Configure: The original builder output was:
   |
 scons: Configure: ".sconf_temp/conftest_2.o" is up to date.
 scons: Configure: The original builder output was:
-  |clang++ -o .sconf_temp/conftest_2.o -c -march=native -mtune=native -O3 -funroll-loops -Wall -Winit-self -Woverloaded-virtual -Wsign-compare -fno-strict-aliasing -std=c++11 -Werror -Wno-array-bounds -Wno-unknown-pragmas -Wno-deprecated -DNDEBUG -I/usr/local/Cellar/python/2.7.7_2/Frameworks/Python.framework/Versions/2.7/include/python2.7 -I/usr/local/lib/python2.7/site-packages/numpy/core/include -I. -Ibuild/native/release -I. -I/opt/local/include -I/usr/local/include -I/usr/local/include .sconf_temp/conftest_2.cpp
+  |clang++ -o .sconf_temp/conftest_2.o -c -march=native -mtune=native -O3 -funroll-loops -Wall -Winit-self -Woverloaded-virtual -Wsign-compare -fno-strict-aliasing -std=c++11 -Werror -Wno-array-bounds -Wno-unknown-pragmas -Wno-deprecated -DNDEBUG -I/Users/Arjun/Desktop/Otherlab/geode -I/usr/local/Cellar/python/2.7.7_2/Frameworks/Python.framework/Versions/2.7/include/python2.7 -I/usr/local/lib/python2.7/site-packages/numpy/core/include -I. -Ibuild/native/release -I. -I/opt/local/include -I/usr/local/include -I/usr/local/include .sconf_temp/conftest_2.cpp
   |
 scons: Configure: ".sconf_temp/conftest_2" is up to date.
 scons: Configure: The original builder output was:
-  |clang++ -o .sconf_temp/conftest_2 -L/usr/local/Cellar/python/2.7.7_2/Frameworks/Python.framework/Versions/2.7/lib/python2.7/config -ldl -framework CoreFoundation -lpython2.7 .sconf_temp/conftest_2.o -Lbuild/native/release/lib -Llib -L/opt/local/lib -L/usr/local/lib -L/usr/local/lib -lgeode -framework Accelerate -framework Accelerate
+  |clang++ -o .sconf_temp/conftest_2 -L/usr/local/Cellar/python/2.7.7_2/Frameworks/Python.framework/Versions/2.7/lib/python2.7/config -ldl -framework CoreFoundation -lpython2.7 .sconf_temp/conftest_2.o -Lbuild/native/release/lib -Llib -L/opt/local/lib -L/usr/local/lib -L/usr/local/lib -L/Users/Arjun/Desktop/Otherlab/geode/build/native/release/lib -lgeode -framework Accelerate -framework Accelerate
   |
 scons: Configure: (cached) yes
 

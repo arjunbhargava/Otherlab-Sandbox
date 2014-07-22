@@ -11,6 +11,7 @@ from OpenGL import GL, GLUT
 from numpy import *
 from props import props
 from follow import *
+from math import *
 
 from kinematic_chain import *
 
@@ -21,14 +22,31 @@ angle_path = [];
 2. Render the path correctly. 
 '''
 
-armset1 = System([Arm('a1',6, effector_functions)])
-location = array([1500, 0,0])
+def generate_targets(point, axis):
+  axis = asarray(axis)
+  axis = normalized(axis)
+  axis2 = unit_orthogonal_vector(axis);
+  axis3 = normalized(cross(axis2, axis))
+  p1 = [];
+  p1.append(point + axis3 * sqrt(25**2 + 25**2))
+  p1.append(point + axis2 * 25+ axis3 * -25)
+  p1.append(point + axis2 * -25 + axis3 * -25)
+  return asarray(p1);
 
-obstacle_arm_frame = Frames(location,Rotation.from_angle_axis(0,array([0,0,1])))
-obstacle_arm = System([Arm('obstacle',6,effector_functions2,bf=obstacle_arm_frame)])
 
-armset_dummy = System([Arm('a2',6,effector_functions)])
-dummy2 = Arm('obstacle2',6,effector_functions2,bf=obstacle_arm_frame)
+target_point = [1000, 0, 1000];
+target_axis = [1,0,0]
+location = array([1800, 0,0])
+
+
+
+armset1 = System([Arm('a1',6, effector_functions)], generate_targets(target_point, target_axis))
+armset_dummy = System([Arm('a2',6,effector_functions)], generate_targets(target_point, target_axis))
+   
+obstacle_arm_frame = Frames(location,Rotation.from_angle_axis(pi/2,array([0,0,1])))
+obstacle_arm = System([Arm('obstacle',6,effector_functions2,bf=obstacle_arm_frame)], generate_targets(target_point, target_axis))
+armset_dummy2 = System([Arm('obstacle2',6,effector_functions2,bf=obstacle_arm_frame)], generate_targets(target_point, target_axis))
+
 
 def update():
   frame = props.get("frame")()
@@ -46,6 +64,7 @@ def view():
   # Set up main window
   global angle_path
   global location
+
   app = QEApp(sys.argv,True)
   main = MainWindow(props)
   #We're going to add some windows
@@ -56,31 +75,40 @@ def view():
   main.view.show_all(True)
 
 
-  target_point = ...
-  target_axis = 
-  goal = armset_dummy.solve_ik(target_point, target_axis)
-  goal2 = System([dummy2]).solve_ik(target_point, target_axis)
-  both_goals = append(goal, goal2)
-  print both_goals
+  goal_list = [];
 
-  dimension = 12
+  for t in range(0, 2):
+    p1 = [1250, 0, 1000];
+    p1 = array([1250, 0, 1300 + 400 * (-2*t +1)]) #500 + 400*cos(pi/10 * t), 1425 + 300*sin(pi/10 *t)])
+    armset_dummy.set_target(generate_targets(p1, target_axis))
+    armset_dummy2.set_target(generate_targets(p1, target_axis))
+
+    goal = armset_dummy.solve_ik()
+    goal2 = armset_dummy2.solve_ik()
+    both_goals = append(goal, goal2)
+    goal_list.append(both_goals)
+  print goal_list
+  both_goals = goal_list
+
 
   robot_origins = asarray(get_origins())
-  robot_origins2 = asarray(get_origins()) + location;
+  robot_origins2 = asarray(get_origins());
   both_origins = array([robot_origins, robot_origins2])
-
-  print both_origins
 
   both_meshes = []
   for arm in armset1.arms:
     both_meshes.append(arm.submeshes())
   for arm in obstacle_arm.arms:
     both_meshes.append(arm.submeshes())
-  print both_meshes
 
-  if len(both_goals) == dimension:
-    angle_path = plan(6,2, both_goals, both_origins, both_meshes, .001, .05, 100.0)
-    props.get("last_frame").set(len(angle_path))
+
+#static Nested<real> plan(unsigned int links, double robot_number, vector<Array<real>> goalState, 
+#Array<Vector<real,3>,2> parsed_offsets, vector<vector<Ref<TriMesh>>> robotMeshes, vector<Ref<TriMesh>> obstacleMeshes, 
+#double resolution, double range, double solve_time, double initial_angle) 
+
+  angle_path = plan(6,2, both_goals, both_origins, both_meshes, [bunny()], .1, .1, 1000.0, pi/2, [array([0, 0, 0]), location])
+  #print angle_path
+  props.get("last_frame").set(len(angle_path))
   
   main.resize_timeline(100);
   #kukaview = main.add_view("kuka")

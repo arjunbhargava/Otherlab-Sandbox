@@ -58,16 +58,14 @@ class Node(object):
     return Frames(f.t+f.r*self.offset(),r*f.r)
 
 
-def up(node):
+def end_effector(node):
   return node.frame().t + node.frame().r*array([1.,0,0])*25 + node.frame().r*array([0., 0, 1.])*sqrt(25.**2 + 25.**2)
 
-def left(node):
+def normal(node):
   return node.frame().t + node.frame().r*array([1.,0,0])*25 + node.frame().r*array([0., 1., 0.])*-25 + node.frame().r*array([0., 0., 1.])*-25;#end_effector(node) 
 
-def right(node):
+def up(node):
   return node.frame().t + node.frame().r*array([1.,0,0])*25 + node.frame().r*array([0., 1., 0.])*25 + node.frame().r*array([0., 0., 1.])*-25;#end_effector(node) 
-
-
 
 class Arm(object):
   def __init__(self,n,dof,eff_functions,bf=Frames(array([0.,0.,0.]),Rotation.from_angle_axis(0.,array([1.,0.,0.])))):
@@ -156,12 +154,8 @@ class Arm(object):
     return ls
 
 class System():
-  def __init__(self,arms,target):
-    self.arms = arms
-    self.target_points = target
-
-  def set_target(self, new_target): 
-    self.target_points = new_target
+  def __init__(self,arms):
+    self.arms=arms
 
   def effectors(self):
     e = []
@@ -198,14 +192,13 @@ class System():
       l.extend(arm.axes)
     return l
 
-#  @cache
-  def targets(self):
-    #t = 0#props.get("frame")()*.01
+  @cache
+  def targets():
+    t = 0#props.get("frame")()*.01
     #p1 = array([817,400*cos(t),1425 + 300*sin(t)])
-#    p1 = array([700, -1000, 1500])
- #   return array([p1+array([0, 0, sqrt(25**2 + 25**2)]), p1+array([0,-25,-25.]),p1+array([0.,25.,-25.,])])
+    p1 = array([700, -1000, 1500])
+    return array([p1+array([0, 0, sqrt(25**2 + 25**2)]), p1+array([0,-25,-25.]),p1+array([0.,25.,-25.,])])
     #return array([p1,p1+array([0,0,50.]),p1,p1-array([0,0,50.])])
-    return self.target_points
 
   def clamp(self, w,d,norm_type=None):
     n = norm(w,ord=norm_type)
@@ -214,7 +207,7 @@ class System():
     else:
       return w*d/n
 
-  def solve_ik(self):
+  def update_effector(self):
     gamma_max = pi*.25
 
     e = self.targets()- self.effectors()
@@ -281,7 +274,7 @@ class System():
         p.set(p() + val*180/pi)
       
       #return array(angles * pi/180)
-   # print self.arms[0]
+    print self.arms[0]
     return array([p()*pi/180 for p in self.axis_props()])
 
     #f = self.arms[0].nodes[-1].frame() 
@@ -290,26 +283,10 @@ class System():
 
 #frame2 = Frames(array([2043.,0.,0.]),Rotation.from_angle_axis(pi,array([0.,0.,1.])))
 
-effector_functions = [up, left, right]
-effector_functions2 = [up, right, left]
+effector_functions = [end_effector,normal,up]
+effector_functions2 = [normal, end_effector, up]
 
-def bunny():
-  bunny = TriMesh()
-  bunny.read("bunny.obj")
-  bunny.translate(array([1250, 0, 1100]))
-  bunny.scale(2000, bunny.centroid())
-  bunny.request_face_normals()
-  bunny.request_vertex_normals()
-  bunny.update_normals()
-  return bunny
 #arms = [Arm('welding',6,effector_functions),Arm('fixturing',6,effector_functions,frame2) ]
-
-  ### for t in self.system.targets():
-     # GL.glPointSize(10)
-      #GL.glBegin(GL.GL_POINTS)
-      #GL.glColor3f(1,0,0)
-      #GL.glVertex3f(t[0],t[1],t[2])
-      #GL.glEnd()'''
 
 class KukaScene(Scene):
   def __init__(self,system):
@@ -320,20 +297,30 @@ class KukaScene(Scene):
     return [arm.lists() for arm in self.system.arms]
 
   def render(self,*args):
-    for i, e in enumerate(self.system.effectors()):
+    for t in self.system.targets():
+      GL.glPointSize(10)
+      GL.glBegin(GL.GL_POINTS)
+      GL.glColor3f(1,0,0)
+      GL.glVertex3f(t[0],t[1],t[2])
+      GL.glEnd()
+    for e in self.system.effectors():
       GL.glDisable(GL.GL_DEPTH_TEST)
       GL.glPointSize(5)
       GL.glBegin(GL.GL_POINTS)
-      v = [0., 0., 0.];
-      v[i]= 1
-      GL.glColor3f(v[0], v[1], v[2]) 
+      GL.glColor3f(0,1,0)
       GL.glVertex3f(e[0],e[1],e[2])
       GL.glEnd()
       GL.glEnable(GL.GL_DEPTH_TEST)
 
-    render_mesh_at(.25, bunny())
-    #print bunny.centroid()
-
+    GL.glDisable(GL.GL_DEPTH_TEST)
+    GL.glPointSize(50)
+    GL.glBegin(GL.GL_POINTS)
+    GL.glColor3f(0,0,1)
+    GL.glVertex3f(716, 397, 1427)
+    GL.glVertex3f(1455, 0, 1320)
+    GL.glVertex3f(1000,0,500)
+    GL.glEnd()
+    GL.glEnable(GL.GL_DEPTH_TEST)
 
     for armid,armlists in enumerate(self.lists()):
       for id,list in enumerate(armlists):
