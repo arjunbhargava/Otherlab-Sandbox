@@ -115,16 +115,16 @@ class SO26ValidityChecker : public ob::StateValidityChecker
 	    	for(unsigned int i = 0; i < robot_number; i++) {
 	    		for(unsigned int j = 0; j < meshes[i].size(); j++) {
 					int index = i * (stateDimension/robot_number_)  + j;
-					face_trees.push_back(meshes_[i][j]->face_tree());
+					face_trees.push_back(meshes[i][j]->face_tree());
 					positions.push_back(face_trees[index]->X.copy());
 				}
 			}
 
-			cout << positions[0][0] << " , " << positions[6][0] << endl;
-			cout << positions[1][0] << ", " << positions[7][0] << endl;
+			//cout << positions[0][0] << " , " << positions[6][0] << endl;
+			//cout << positions[1][0] << ", " << positions[7][0] << endl;
 
 			for(unsigned int i = 0; i < obstacleMeshes.size(); i++) {
-				obstacle_trees.push_back(obstacleMeshes_[i]->face_tree());
+				obstacle_trees.push_back(obstacleMeshes[i]->face_tree());
 				obstacle_positions.push_back(obstacle_trees[i]->X.copy());
 			}
  		 }
@@ -139,7 +139,7 @@ class SO26ValidityChecker : public ob::StateValidityChecker
 				double angle = cstate1->components[i]->as<ob::SO2StateSpace::StateType>()->value * 180/pi;
 				int index = i%(stateDimension/robot_number_);
 				if(angle > upper_kr16_bounds[index] || angle < lower_kr16_bounds[index]) {
-					cout << "Angle failure on linkage " << index << endl;
+				//	cout << "Angle failure on linkage " << index << endl;
 					return false;
 				}
 				joint_angles[i] = angle * pi/180;
@@ -212,7 +212,7 @@ class SO26ValidityChecker : public ob::StateValidityChecker
 			for(unsigned int i = 0; i < stateDimension; i++) {
 				for(unsigned int j = 0; j < obstacle_trees.size(); j++) {
 					if(mesh_collisions(face_trees[i], obstacle_trees[j])) {
-						cout << "Hit a bunny" << endl;
+					//	cout << "Hit a bunny" << endl;
 						return true;
 					}
 				}
@@ -225,9 +225,10 @@ class SO26ValidityChecker : public ob::StateValidityChecker
 				for(unsigned int j = i; j < stateDimension/robot_number_; j++) {
 					int index = i;
 					int index2 = (stateDimension/robot_number_) + j;
+					//cout << index << " , " << index2 << endl;
 					if(mesh_collisions(face_trees[index], face_trees[index2])) {
-						cout << "Got collision on  meshes:" << i << ", " << j << endl;
-						cout << "Mesh 1 has: " << meshes_[0][i]->n_faces() << " faces. Mesh 2 has: " << meshes_[0][j]->n_faces() << " faces." << endl;
+					//	cout << "Got collision on  meshes:" << i << ", " << j << endl;
+					//	cout << "Mesh 1 has: " << meshes_[0][i]->n_faces() << " faces. Mesh 2 has: " << meshes_[0][j]->n_faces() << " faces." << endl;
 						return true;
 					}
 				}
@@ -247,8 +248,8 @@ class SO26ValidityChecker : public ob::StateValidityChecker
 							int index = i * (stateDimension/robot_number_) + j;
 							int index2 = i * (stateDimension/robot_number_) + k;
 							if(mesh_collisions(face_trees[index], face_trees[index2])) {
-								cout << "Got self collision comparing robot" << i << "And meshes:" << j << ", " << k << endl;
-								cout << "Mesh 1 has: " << meshes_[i][j]->n_faces() << " faces. Mesh 2 has: " << meshes_[i][k]->n_faces() << " faces." << endl;
+				//				cout << "Got self collision comparing robot" << i << "And meshes:" << j << ", " << k << endl;
+				//				cout << "Mesh 1 has: " << meshes_[i][j]->n_faces() << " faces. Mesh 2 has: " << meshes_[i][k]->n_faces() << " faces." << endl;
 								return true;
 							}
 						}
@@ -381,6 +382,7 @@ static Nested<real> plan(unsigned int links, double robot_number, vector<Array<r
 	//Create the space information pointer that everything else takes...
 	ob::StateSpacePtr space(new ChainSpace(links, robot_number)); 
 	ob::SpaceInformationPtr si(new ob::SpaceInformation(space));
+	
 	si->setStateValidityCheckingResolution(resolution);
 
 	//Set up the node structure from the given files. 
@@ -389,6 +391,8 @@ static Nested<real> plan(unsigned int links, double robot_number, vector<Array<r
 	//We initialize as a 000000 state for the start configuration
 	ob::ScopedState<ob::CompoundStateSpace> start(space); 
 	ob::ScopedState<ob::CompoundStateSpace> goal(space);
+
+	og::PathSimplifier simplifier(si);
 
 	//Eventually this will be where I do validity checking 
 	si->setStateValidityChecker(ob::StateValidityCheckerPtr(new SO26ValidityChecker(si, 2, axis_information, robotMeshes, obstacleMeshes, initial_angle, initial_location)));
@@ -404,16 +408,15 @@ static Nested<real> plan(unsigned int links, double robot_number, vector<Array<r
 
 		Array<real> substate = goalState[k];
 		ob::ScopedState<ob::CompoundStateSpace> new_goal(space);
+
 		for(unsigned int index = 0; index < si->getStateDimension(); ++index) {
 			if(substate[index] > pi) substate[index] = substate[index] - 2*pi;
 			else if(substate[index] < -pi) substate[index] = substate[index] + 2*pi;
 
 			if(k == 0) {
-			//	if(index != 6)
 					start->as<ob::SO2StateSpace::StateType>(index)->value = 0;
-			//	else start->as<ob::SO2StateSpace::StateType>(index)->value = pi;
-
 			}
+
 			else start->as<ob::SO2StateSpace::StateType>(index)->value = goal->as<ob::SO2StateSpace::StateType>(index)->value;
 			new_goal->as<ob::SO2StateSpace::StateType>(index)->value = substate[index];
 		}
@@ -444,7 +447,13 @@ static Nested<real> plan(unsigned int links, double robot_number, vector<Array<r
 	    {
 	        ob::PathPtr solution_path = pdef->getSolutionPath();
 	        og::PathGeometric geopath = dynamic_cast<og::PathGeometric &>(*solution_path);
+	        if(simplifier.shortcutPath(geopath, 0, 0, .1)) {
+	        	simplifier.smoothBSpline(geopath);
+	        	//simplifier.simplify(geopath, 10);
+	        	cout << "Simplified the path? " << endl;
+	        }
 	       	vector<ob::State *> path_states = geopath.getStates();
+
 
 	        for(unsigned int i = 0; i < path_states.size(); ++i) {
 	        	ChainSpace::StateType* cstate1 = static_cast<ChainSpace::StateType*>(path_states[i]);
