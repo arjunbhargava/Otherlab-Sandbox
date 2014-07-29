@@ -2,16 +2,16 @@ from __future__ import division
 import sys
 from gui import *
 import geode
+import scipy
 from geode import *
-
 from numpy import *
 from numpy.linalg import *
 from math import *
 from geode.openmesh import *
 from geode.vector import *
-
+from scipy import *
 from OpenGL import GL, GLUT
-
+from scipy.optimize import fmin_tnc
 from props import props
 
 base = './origins_kr16'
@@ -109,6 +109,7 @@ class Arm(object):
     self.nodes[4].rotation.set_min(-130.).set_max(130.).set_step(1)
 
     self.nodes[5].axis.set((1,0,0))
+    self.nodes[5].rotation.set_min(-350.).set_max(350.)
     self.nodes[5].rotation.set_step(.5)
     self.nodes[5].negate_rotation.set(True)
 
@@ -214,6 +215,30 @@ class System():
     else:
       return w*d/n
 
+  def ik_helper(self,theta):
+    for i,val in enumerate(theta):
+        p = self.axis_props()[i]
+        p.set(val)
+    e = self.targets() - self.effectors()
+    J = self.Jacobian()
+    J.reshape(3*len(self.effectors()),self.n_nodes())
+    return [linalg.norm(e)**2, J]
+
+  #def gradient(self, theta):
+   # for i,val in enumerate(theta):
+    #    p = self.axis_props()[i]
+    #    p.set(val)
+    #dedo = 
+    #gradient = []
+    #gradient.append()
+    #J = self.Jacobian()
+    #J = J.reshape(3*len(self.effectors()),self.n_nodes())
+    #print shape(J)
+    #e = self.targets() - self.effectors()
+    #e = e.reshape(1,3 * len(self.effectors()))
+    #print shape(e)
+    #return dot(e,J)
+
   def solve_ik(self):
     gamma_max = pi*.25
 
@@ -280,9 +305,11 @@ class System():
         p = self.axis_props()[i]
         p.set(p() + val*180/pi)
       
-      #return array(angles * pi/180)
-   # print self.arms[0]
-    return array([p()*pi/180 for p in self.axis_props()])
+ #   angle_bounds = [[-185, 185], [-155, 35], [-130, 154], [-350, 350], [-130, 130], [-350, 350]]
+    initial_theta = array([p()*pi/180 for p in self.axis_props()])
+   # a,b,c = fmin_tnc(self.ik_helper, fprime = self.gradient, x0 = initial_theta, bounds = angle_bounds)
+    return initial_theta
+
 
     #f = self.arms[0].nodes[-1].frame() 
     #ang = f.r.euler_angles()

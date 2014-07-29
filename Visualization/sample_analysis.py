@@ -17,10 +17,6 @@ from kinematic_chain import *
 
 angle_path = [];
 
-'''Things to do: 
-1. Pass in the origins and the goals correctly. 
-2. Render the path correctly. 
-'''
 
 def generate_targets(point, axis):
   axis = asarray(axis)
@@ -35,7 +31,7 @@ def generate_targets(point, axis):
 
 
 target_point = [1000, 0, 1000];
-target_axis = [0, 0,1]
+target_axis = [1, 0,0]
 location = array([2000, 0,0])
 
 
@@ -48,45 +44,34 @@ obstacle_arm = System([Arm('obstacle',6,effector_functions2,bf=obstacle_arm_fram
 armset_dummy2 = System([Arm('obstacle2',6,effector_functions2,bf=obstacle_arm_frame)], generate_targets(target_point, target_axis))
 
 
-def update():
-  frame = props.get("frame")()
-  state = angle_path[int(frame)]
-  for arm in armset1.arms:
-    for i, node in enumerate(arm.nodes):
-      node.rotation.set(float(state[i]) * 180/pi)
-  for arm in obstacle_arm.arms:
-    for j , node in enumerate(arm.nodes):
-      node.rotation.set(float(state[j+6] * 180/pi))
-
-
 
 def view():
   # Set up main window
   global angle_path
   global location
 
-  app = QEApp(sys.argv,True)
-  main = MainWindow(props)
+  #app = QEApp(sys.argv,True)
+  #main = MainWindow(props)
   #We're going to add some windows
-  ks = KukaScene(armset1)
-  ks2 = KukaScene(obstacle_arm)
-  main.view.add_scene("kuka",ks)
-  main.view.add_scene("kuka",ks2)
-  main.view.show_all(True)
+  #ks = KukaScene(armset1)
+  #ks2 = KukaScene(obstacle_arm)
+  #main.view.add_scene("kuka",ks)
+  #main.view.add_scene("kuka",ks2)
+  #main.view.show_all(True)
 
 
   goal_list = [];
 
   for t in range(0, 1):
     #p1 = [1250, 0, 1000];
-    p1 = array([1250, 0, 1700]) #500 + 400*cos(pi/10 * t), 1425 + 300*sin(pi/10 *t)])
+    p1 = array([1250, 0, 1300 + 400 * (-2*t +1)]) #500 + 400*cos(pi/10 * t), 1425 + 300*sin(pi/10 *t)])
     armset_dummy.set_target(generate_targets(p1, target_axis))
     armset_dummy2.set_target(generate_targets(p1, target_axis))
 
-    goal = armset_dummy.solve_ik()
-    goal2 = armset_dummy2.solve_ik()
-    both_goals = append(goal, goal2)
-    goal_list.append(both_goals)
+#    goal = armset_dummy.solve_ik()
+ #   goal2 = armset_dummy2.solve_ik()
+  #  both_goals = append(goal, goal2)
+    goal_list.append(p1)
   print goal_list
   both_goals = goal_list
 
@@ -104,21 +89,21 @@ def view():
 
 #static Nested<real> plan(unsigned int links, double robot_number, vector<Array<real>> goalState, 
 #Array<Vector<real,3>,2> parsed_offsets, vector<vector<Ref<TriMesh>>> robotMeshes, vector<Ref<TriMesh>> obstacleMeshes, 
-#double resolution, double range, double solve_time, double initial_angle) 
+#double resolution, double range, double solve_time, double initial_angle, initial locations, tolerance) 
 
-  angle_path = plan_goals(6,2, [p1], both_origins, both_meshes, [bunny()], .1, 50, 15., pi/2, [array([0, 0, 0]), location],10)
-  #print angle_pat
-  props.get("last_frame").set(len(angle_path))
+  angle_path = sample_path(6,2, both_goals, both_origins, both_meshes, [bunny()], .1, 50 , 30., pi/2, [array([0, 0, 0]), location], 10)
+  #print angle_path
+#  props.get("last_frame").set(len(angle_path))
   
-  main.resize_timeline(100);
- # plot_points(angle_path)
-  kukaview = main.add_view("kuka")
+ # main.resize_timeline(100);
+  plot_points(angle_path, both_goals)
+  #kukaview = main.add_view("kuka")
  #Turn on the listener for props.get("frame"), then calls update (timeline updating)
-  l = listen(props.get("frame"),update)
+  #l = listen(props.get("frame"),update)
 
   # Launch
-  main.init()
-  app.run()
+ # main.init()
+  #app.run()
 
 def main():
   #Pulls the properties for props
@@ -127,3 +112,6 @@ def main():
  
 if __name__=='__main__':
   main()
+
+
+

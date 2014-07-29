@@ -36,13 +36,13 @@ using std::vector;
 using std::cout;
 using std::endl;
 
-namespace other {
 
+namespace other {
+namespace {
 const double pi = boost::math::constants::pi<double>();
 int sample_counter = 0;
-double upper_kr16_bounds [] = {185, 35, 154, 350, 130, 350};
-double lower_kr16_bounds [] = {-185, -155,-130, -350, -130, -350};
-
+double upper_kr16_bounds [] = {185, 125, 64, 165, 130, 350};
+double lower_kr16_bounds [] = {-185, -65, -210, -165, -130, -350};
 //Creating a struct of each linkage, used for rendering/ forward kinematics
 struct link_t {
 	Vector<real,3> axis;
@@ -139,7 +139,7 @@ class SO26ValidityChecker : public ob::StateValidityChecker
 				double angle = cstate1->components[i]->as<ob::SO2StateSpace::StateType>()->value * 180/pi;
 				int index = i%(stateDimension/robot_number_);
 				if(angle > upper_kr16_bounds[index] || angle < lower_kr16_bounds[index]) {
-				//	cout << "Angle failure on linkage " << index << endl;
+					cout << "Angle failure on linkage " << index << endl;
 					return false;
 				}
 				joint_angles[i] = angle * pi/180;
@@ -212,7 +212,7 @@ class SO26ValidityChecker : public ob::StateValidityChecker
 			for(unsigned int i = 0; i < stateDimension; i++) {
 				for(unsigned int j = 0; j < obstacle_trees.size(); j++) {
 					if(mesh_collisions(face_trees[i], obstacle_trees[j])) {
-					//	cout << "Hit a bunny" << endl;
+						cout << "Hit a bunny" << endl;
 						return true;
 					}
 				}
@@ -227,8 +227,8 @@ class SO26ValidityChecker : public ob::StateValidityChecker
 					int index2 = (stateDimension/robot_number_) + j;
 					//cout << index << " , " << index2 << endl;
 					if(mesh_collisions(face_trees[index], face_trees[index2])) {
-					//	cout << "Got collision on  meshes:" << i << ", " << j << endl;
-					//	cout << "Mesh 1 has: " << meshes_[0][i]->n_faces() << " faces. Mesh 2 has: " << meshes_[0][j]->n_faces() << " faces." << endl;
+						cout << "Got collision on  meshes:" << i << ", " << j << endl;
+						cout << "Mesh 1 has: " << meshes_[0][i]->n_faces() << " faces. Mesh 2 has: " << meshes_[0][j]->n_faces() << " faces." << endl;
 						return true;
 					}
 				}
@@ -248,8 +248,8 @@ class SO26ValidityChecker : public ob::StateValidityChecker
 							int index = i * (stateDimension/robot_number_) + j;
 							int index2 = i * (stateDimension/robot_number_) + k;
 							if(mesh_collisions(face_trees[index], face_trees[index2])) {
-				//				cout << "Got self collision comparing robot" << i << "And meshes:" << j << ", " << k << endl;
-				//				cout << "Mesh 1 has: " << meshes_[i][j]->n_faces() << " faces. Mesh 2 has: " << meshes_[i][k]->n_faces() << " faces." << endl;
+								cout << "Got self collision comparing robot" << i << "And meshes:" << j << ", " << k << endl;
+								cout << "Mesh 1 has: " << meshes_[i][j]->n_faces() << " faces. Mesh 2 has: " << meshes_[i][k]->n_faces() << " faces." << endl;
 								return true;
 							}
 						}
@@ -478,17 +478,18 @@ static Nested<real> plan(unsigned int links, double robot_number, vector<Array<r
 	return path;
 }
 
-void printVector(Vector<real,3> vectortoprint) {
-	for(int i = 0; i < vectortoprint.size(); i++) {
-		cout << vectortoprint[i] << endl;
-	}
-}
+// void printVector(Vector<real,3> vectortoprint) {
+// 	for(int i = 0; i < vectortoprint.size(); i++) {
+// 		cout << vectortoprint[i] << endl;
+// 	}
+// }
 
+}
 }
 
 using namespace other;
 
-void wrap_12d_kinematics_with_collision(){
+void wrap_multi_planner(){
 	geode::python::function("plan",plan);
 }
 
