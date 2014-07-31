@@ -31,7 +31,7 @@ def generate_targets(point, axis):
 
 
 target_point = [1000, 0, 1000];
-target_axis = [1, 0,0]
+target_axis = [0, 0,1]
 location = array([2000, 0,0])
 
 
@@ -61,19 +61,24 @@ def view():
 
 
   goal_list = [];
-
+  angle_goals = [];
   for t in range(0, 1):
     #p1 = [1250, 0, 1000];
     p1 = array([1250, 0, 1300 + 400 * (-2*t +1)]) #500 + 400*cos(pi/10 * t), 1425 + 300*sin(pi/10 *t)])
+   # p1 = [0, 0, 0]
+
+    goal_list.append(p1)
+    #for i in linspace(-pi/2, pi/2, 10):
+     # for j in linspace(0, pi, 10):
+      #  target_axis = [cos(i)* sin(j), sin(i) * sin(j), cos(z)]
     armset_dummy.set_target(generate_targets(p1, target_axis))
     armset_dummy2.set_target(generate_targets(p1, target_axis))
-
-#    goal = armset_dummy.solve_ik()
- #   goal2 = armset_dummy2.solve_ik()
-  #  both_goals = append(goal, goal2)
-    goal_list.append(p1)
+    goal = armset_dummy.solve_ik()
+    goal2 = armset_dummy2.solve_ik()
+    final_configuration = append(goal, goal2)
+    angle_goals.append(final_configuration)
   print goal_list
-  both_goals = goal_list
+  print angle_goals
 
 
   robot_origins = asarray(get_origins())
@@ -91,12 +96,11 @@ def view():
 #Array<Vector<real,3>,2> parsed_offsets, vector<vector<Ref<TriMesh>>> robotMeshes, vector<Ref<TriMesh>> obstacleMeshes, 
 #double resolution, double range, double solve_time, double initial_angle, initial locations, tolerance) 
 
-  angle_path = sample_path(6,2, both_goals, both_origins, both_meshes, [bunny()], .1, 50 , 30., pi/2, [array([0, 0, 0]), location], 10)
+  angle_path = sample_path(6,2, goal_list, both_origins, both_meshes, [bunny()], .1, 50 , 30., pi/2, [array([0, 0, 0]), location], .01, angle_goals)
   #print angle_path
 #  props.get("last_frame").set(len(angle_path))
-  
- # main.resize_timeline(100);
-  plot_points(angle_path, both_goals)
+    # main.resize_timeline(100);
+  plot_points(angle_path, goal_list)
   #kukaview = main.add_view("kuka")
  #Turn on the listener for props.get("frame"), then calls update (timeline updating)
   #l = listen(props.get("frame"),update)

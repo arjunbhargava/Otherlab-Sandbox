@@ -33,8 +33,8 @@ def plot_points(anglepath, target):
 	ax.plot(x2, y2, z2, c = 'b', marker = '^')
 	ax.scatter([anglepath[0][0]], [anglepath[0][1]], [anglepath[0][2]], c = 'y', s = 100)
 	ax.scatter([anglepath[1][0]], [anglepath[1][1]], [anglepath[1][2]], c = 'y', s = 100)
-	ax.scatter([anglepath[-1][0]], [anglepath[-1][1]], [anglepath[-1][2]], c = 'g', s = 80)
-	ax.scatter([anglepath[-2][0]], [anglepath[-2][1]], [anglepath[-2][2]], c = 'g', s = 80)
+	ax.scatter([anglepath[-1][0]], [anglepath[-1][1]], [anglepath[-1][2]], c = 'g', s = 150)
+	ax.scatter([anglepath[-2][0]], [anglepath[-2][1]], [anglepath[-2][2]], c = 'g', s = 150)
 	for i, val in enumerate(target):
 		ax.scatter([val[0]], [val[1]], [val[2]], c = 'g', s = 60)
 	ax.set_xlabel('X Label')

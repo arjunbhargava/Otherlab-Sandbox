@@ -384,10 +384,8 @@ public:
 		vector<Vector<real,3>> ends =  this_space->effectorPositions(state, 1);
 		samples.push_back(ends[0]);
 		samples.push_back(ends[1]);
-		cout << sys_.target_position << endl;
 
 	    double distance = sqrt(distances[0] * distances[0] + distances[1]*distances[1]);
-	 //   cout << distances[0] << ", " << distances[1] << endl;
 	    ChainSpace::StateType* cstate = static_cast<ChainSpace::StateType*>(state);
 
 	    if(closest > distance || closest_state == NULL) {
@@ -443,13 +441,13 @@ private:
 	    	double diff2; 
 	    	if(i < sys_.stateDimension/sys_.robot_number) {
 		    	diff = magnitude(sys_.target_position - (link_frames[5].t + j[i]*theta_eps));
-		    	diff2 = magnitude(sys_.target_position - (link_frames[5].t - j[i]*theta_eps));
-		    	if(diff2 < diff) diff = -diff2;
+	//	    	diff2 = magnitude(sys_.target_position - (link_frames[5].t - j[i]*theta_eps));
+	//	    	if(diff2 < diff) diff = -diff2;
 		    	if(abs(diff) < sys_.tolerance) diff = 0;
 		    } else {
 		    	diff = magnitude(sys_.target_position - (link_frames[11].t + j[i]*theta_eps));
-		    	diff2 = magnitude(sys_.target_position - (link_frames[11].t - j[i]*theta_eps));
-		    	if(diff2 <  diff) diff = -diff2;
+		//    	diff2 = magnitude(sys_.target_position - (link_frames[11].t - j[i]*theta_eps));
+		  //  	if(diff2 <  diff) diff = -diff2;
 		    	if(abs(diff) < sys_.tolerance) diff = 0;
 
 		    }
@@ -463,18 +461,19 @@ private:
 	  	
 	  	for(unsigned int i = 0; i < j_distances.size(); i++) {
 	  		if(i < sys_.stateDimension/sys_.robot_number) 
-		  		mag1 += abs(j_distances[i]);
-		  	else mag2 += abs(j_distances[i]);
+		  		mag1 += abs(1/j_distances[i]);
+		  	else mag2 += abs(1/j_distances[i]);
 	  	}
 
+	  	vector<double> weights;
 	  	for(unsigned int i = 0; i < j_distances.size(); i++) {
 	  		if(i < sys_.stateDimension/sys_.robot_number)
-			  	j_distances[i] *= 1/mag1;
-			else j_distances[i] *= 1/mag2;
-	//		cout << j_distances[i] << endl;
+			  	weights.push_back(1/j_distances[i] * 1/mag1);
+			else weights.push_back(1/j_distances[i] * 1/mag2);
+			cout << weights[i] << endl;
 	 	}
 
-	 	int index1, index2 = 0;
+	 /*	int index1, index2 = 0;
 	 	double current_max1, current_max2 = 1;
 	 	for(unsigned int i = 0; i < j_distances.size(); i++) {
 	 		if(i < sys_.stateDimension/sys_.robot_number) {
@@ -505,8 +504,9 @@ private:
 
 	//	for(unsigned int i = 0; i < j_distances.size(); i++) {
 	//		cout << j_distances[i] << endl;
-	//	}
-		return j_distances;
+	//	}*/
+		 exit(0);
+		return weights;
 	}
 
 
