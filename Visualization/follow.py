@@ -1,3 +1,4 @@
+
 from __future__ import division
 import sys
 from gui import *
@@ -241,6 +242,9 @@ class System():
 
   def solve_ik(self):
     gamma_max = pi*.25
+    for i in range(0, 12):
+      p = self.axis_props()[i]
+      p.set(0)
 
     e = self.targets()- self.effectors()
     for i,v in enumerate(e):
