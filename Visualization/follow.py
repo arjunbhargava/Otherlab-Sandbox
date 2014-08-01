@@ -242,7 +242,7 @@ class System():
 
   def solve_ik(self):
     gamma_max = pi*.25
-    for i in range(0, 12):
+    for i in range(0, self.n_nodes()):
       p = self.axis_props()[i]
       p.set(0)
 
