@@ -18,8 +18,25 @@ from props import props
 base = './origins_kr16'
 origins = [ [float(i) for i in l.strip().split(' ')] for l in open(base+'.txt')]
 
+def getContours():
+  touch = 'pts.txt'
+  contours = [ [float(i) for i in l.strip().split(' ')] for l in open(touch)]  
+  for i, val in enumerate(contours):
+    contours[i] = Rotation.from_angle_axis(pi/2, [0, 0 , 1]) * val
+    contours[i] = Rotation.from_angle_axis(-pi/2, [0, 1, 0]) * contours[i]
+  return contours
+
 def get_origins():
   return origins
+
+def bike_mesh():
+  bike = TriMesh()
+  bike.read("bike_mesh.om")
+  bike.set_X(Rotation.from_angle_axis(pi/2, [0, 0, 1]) * bike.X())
+  bike.request_face_normals()
+  bike.request_vertex_normals()
+  bike.update_normals()
+  return bike
 
 def render_mesh_at(i,tm):
   c = wheel_color(pi*i)
@@ -60,15 +77,13 @@ class Node(object):
 
 
 def up(node):
-  return node.frame().t + node.frame().r*array([1.,0,0])*25 + node.frame().r*array([0., 0, 1.])*sqrt(25.**2 + 25.**2)
+  return node.frame().t + node.frame().r*array([1.,0,0])*0 + node.frame().r*array([0., 0, 1.])*sqrt(25.**2 + 25.**2)
 
 def left(node):
-  return node.frame().t + node.frame().r*array([1.,0,0])*25 + node.frame().r*array([0., 1., 0.])*-25 + node.frame().r*array([0., 0., 1.])*-25;#end_effector(node) 
+  return node.frame().t + node.frame().r*array([1.,0,0])*0 + node.frame().r*array([0., 1., 0.])*-25 + node.frame().r*array([0., 0., 1.])*-25;#end_effector(node) 
 
 def right(node):
-  return node.frame().t + node.frame().r*array([1.,0,0])*25 + node.frame().r*array([0., 1., 0.])*25 + node.frame().r*array([0., 0., 1.])*-25;#end_effector(node) 
-
-
+  return node.frame().t + node.frame().r*array([1.,0,0])*0 + node.frame().r*array([0., 1., 0.])*25 + node.frame().r*array([0., 0., 1.])*-25;#end_effector(node) 
 
 class Arm(object):
   def __init__(self,n,dof,eff_functions,bf=Frames(array([0.,0.,0.]),Rotation.from_angle_axis(0.,array([1.,0.,0.])))):
@@ -144,7 +159,6 @@ class Arm(object):
     meshes = []
     for node in self.nodes:
       tm = node.mesh().copy()
-  #    tm.transform(node.frame().matrix());
       meshes.append(tm)
     return meshes
 
@@ -158,9 +172,10 @@ class Arm(object):
     return ls
 
 class System():
-  def __init__(self,arms,target):
+  def __init__(self,arms,target, number):
     self.arms = arms
     self.target_points = target
+    self.number = number
 
   def set_target(self, new_target): 
     self.target_points = new_target
@@ -202,14 +217,9 @@ class System():
 
 #  @cache
   def targets(self):
-    #t = 0#props.get("frame")()*.01
-    #p1 = array([817,400*cos(t),1425 + 300*sin(t)])
-#    p1 = array([700, -1000, 1500])
- #   return array([p1+array([0, 0, sqrt(25**2 + 25**2)]), p1+array([0,-25,-25.]),p1+array([0.,25.,-25.,])])
-    #return array([p1,p1+array([0,0,50.]),p1,p1-array([0,0,50.])])
     return self.target_points
 
-  def clamp(self, w,d,norm_type=None):
+  def this_clamp(self, w,d,norm_type=None):
     n = norm(w,ord=norm_type)
     if n < d:
       return w
@@ -225,37 +235,23 @@ class System():
     J.reshape(3*len(self.effectors()),self.n_nodes())
     return [linalg.norm(e)**2, J]
 
-  #def gradient(self, theta):
-   # for i,val in enumerate(theta):
-    #    p = self.axis_props()[i]
-    #    p.set(val)
-    #dedo = 
-    #gradient = []
-    #gradient.append()
-    #J = self.Jacobian()
-    #J = J.reshape(3*len(self.effectors()),self.n_nodes())
-    #print shape(J)
-    #e = self.targets() - self.effectors()
-    #e = e.reshape(1,3 * len(self.effectors()))
-    #print shape(e)
-    #return dot(e,J)
-
-  def solve_ik(self):
+  def solve_ik(self, initialize):
     gamma_max = pi*.25
-    for i in range(0, self.n_nodes()):
-      p = self.axis_props()[i]
-      p.set(0)
+    if initialize < 1:
+      for i in range(0, self.n_nodes()):
+        p = self.axis_props()[i]
+        p.set(0)
 
     e = self.targets()- self.effectors()
     for i,v in enumerate(e):
-      e[i] = self.clamp(v, 350.)
+      e[i] = self.this_clamp(v, 350.)
 
     iters = 0
-    while norm(e) > .05 and iters < 1e2:
+    while norm(e) > .01 and iters < 1e2:
       iters+=1
       e = self.targets()-self.effectors()
       for i,v in enumerate(e):
-        e[i] = self.clamp(v, 350.)
+        e[i] = self.this_clamp(v, 350.)
       e = ndarray.flatten(e)
 
       if norm(e) == 0:
@@ -270,13 +266,8 @@ class System():
       V = asarray(V)
       Umags = magnitudes(U)
       phisum = zeros(nn)
-      #print 'U : ',U.shape
-      #print 's: ',s
-      #print 'V : ',V.shape
       S = ndarray(shape=(U.shape[1],V.shape[0]))
-      #print 'S: ',S.shape
       S[:len(s),:len(s)] = diag(s)
-      #assert allclose(Jm,dot(U,dot(S,V)))
 
       for i in range(U.shape[1]):
         Ui = U[:,i]
@@ -300,47 +291,63 @@ class System():
         #p = axis_props()[i]
         #gamma_max=min(min(abs(p.min-p()),abs(p.max-p())),pi*.25)
         gamma_i = min(1.,Ni/Mi)*gamma_max
-        phi_i = self.clamp(sigi_inv*alpha*vv,gamma_i,inf)
+        phi_i = self.this_clamp(sigi_inv*alpha*vv,gamma_i,inf)
         phisum+=phi_i
 
-      dt = self.clamp(phisum,gamma_max,inf)
-      #print 'dt: ',dt
+      dt = self.this_clamp(phisum,gamma_max,inf)
       for i,val in enumerate(dt):
         p = self.axis_props()[i]
         p.set(p() + val*180/pi)
       
- #   angle_bounds = [[-185, 185], [-155, 35], [-130, 154], [-350, 350], [-130, 130], [-350, 350]]
     initial_theta = array([p()*pi/180 for p in self.axis_props()])
-   # a,b,c = fmin_tnc(self.ik_helper, fprime = self.gradient, x0 = initial_theta, bounds = angle_bounds)
-    return initial_theta
+    if iters == 1e2:
+      timeout = 1
+    else: timeout = 0
+    return initial_theta, timeout
+
+  def bike(self):
+    frame = self.arms[0].nodes[-1].frame()
+    bike = bike_mesh()    
+    #bike.set_X(Rotation.from_angle_axis(-pi/2, [0, 1, 0]) * bike.X())
+    bike.set_X(frame * bike.X())
+    bike.translate(frame.r * (array([1,0,0]) * 100))
+    bike.request_face_normals()
+    bike.request_vertex_normals()
+    bike.update_normals()
+    return bike
 
 
-    #f = self.arms[0].nodes[-1].frame() 
-    #ang = f.r.euler_angles()
-    #return ang
+  def pointNormals(self):
+    points = getContours()
+    this_bike = bike_mesh()
+    this_bike.set_X(Rotation.from_angle_axis(-pi/2, [0, 1, 0]) *this_bike.X())
+    #At this point, the bike mesh has been rotated such that 
+    #if it were rotated by the robot, the robot's end effector will be pointing up. Therefore, the normals 
+    #should be calculate from here. We'll start by saying that if there's a 90 degree or less difference that
+    #we'll stay just pointing straight up, if it's more than that we'll flip down.
+    bikeft = this_bike.face_tree()
+    rotation_axes = []
+    rotation_angles = []
+    normals = []
+    target_axes = []
+    for i, p in enumerate(points):
+       close_point = bikeft.closest_point(p, 200)
+       p = close_point[0]
+       normal = this_bike.smooth_normal(close_point[1], close_point[2])
+       normals.append(normal)
+       rotation_axis = cross(normal, [0, 0, 1])      
+       rotation_angle = acos(clamp(dot([0,0, 1], normal), -1, 1))
+       rotation_axes.append(rotation_axis)
+       rotation_angles.append(rotation_angle)
+       points[i] =  Rotation.from_angle_axis(rotation_angle, rotation_axis) * p;
+       target_axes.append(Rotation.from_angle_axis(rotation_angle, rotation_axis) * array([0, 0, 1]))
+    return points, rotation_axes, rotation_angles, target_axes, normals
+
 
 #frame2 = Frames(array([2043.,0.,0.]),Rotation.from_angle_axis(pi,array([0.,0.,1.])))
 
-effector_functions = [up, left, right]
-effector_functions2 = [up, right, left]
-
-def bunny():
-  bunny = TriMesh()
-  bunny.read("bunny.obj")
-  bunny.translate(array([1250, 0, 1100]))
-  bunny.scale(2000, bunny.centroid())
-  bunny.request_face_normals()
-  bunny.request_vertex_normals()
-  bunny.update_normals()
-  return bunny
-#arms = [Arm('welding',6,effector_functions),Arm('fixturing',6,effector_functions,frame2) ]
-
-  ### for t in self.system.targets():
-     # GL.glPointSize(10)
-      #GL.glBegin(GL.GL_POINTS)
-      #GL.glColor3f(1,0,0)
-      #GL.glVertex3f(t[0],t[1],t[2])
-      #GL.glEnd()'''
+effector_functions = [up, left, right]#, middle]
+effector_functions2 = [up, right, left]#, middle]  
 
 class KukaScene(Scene):
   def __init__(self,system):
@@ -352,19 +359,43 @@ class KukaScene(Scene):
 
   def render(self,*args):
     for i, e in enumerate(self.system.effectors()):
-      GL.glDisable(GL.GL_DEPTH_TEST)
-      GL.glPointSize(5)
+      GL.glPointSize(25)
       GL.glBegin(GL.GL_POINTS)
       v = [0., 0., 0.];
-      v[i]= 1
+      v[i%3]= 1
       GL.glColor3f(v[0], v[1], v[2]) 
       GL.glVertex3f(e[0],e[1],e[2])
       GL.glEnd()
       GL.glEnable(GL.GL_DEPTH_TEST)
 
-    render_mesh_at(.25, bunny())
-    #print bunny.centroid()
+    for i, e in enumerate(self.system.targets()):
+      if i == len(self.system.targets())-1:
+        GL.glPointSize(10)
+      else:
+        GL.glPointSize(10)
+      GL.glBegin(GL.GL_POINTS)
+      v = [0., 0., 0.];
+      v[i%3]= 1
+      GL.glColor3f(v[0], v[1], v[2]) 
+      GL.glVertex3f(e[0],e[1],e[2])
+      GL.glEnd()
+      GL.glEnable(GL.GL_DEPTH_TEST)
 
+    
+    # for i, c in enumerate(getContours()):
+    #   c = [800, 0, 1000] - c;
+    #   GL.glDisable(GL.GL_DEPTH_TEST)
+    #   GL.glPointSize(10)
+    #   GL.glBegin(GL.GL_POINTS)
+    #   v = [0., 0., 0.];
+    #   v[1]= 1
+    #   GL.glColor3f(v[0], v[1], v[2]) 
+    #   GL.glVertex3f(c[0], c[1],c[2])
+    #   GL.glEnd()
+    #   GL.glEnable(GL.GL_DEPTH_TEST)
+
+    if self.system.number == 0:
+      render_mesh_at(0, self.system.bike())
 
     for armid,armlists in enumerate(self.lists()):
       for id,list in enumerate(armlists):
@@ -381,7 +412,6 @@ class KukaScene(Scene):
             GL.glColor4f(c[0],c[1],c[2],.7)
             GL.glVertex3f(p[0]+scl*v[0],p[1]+scl*v[1],p[2]+scl*v[2])
             GL.glEnd()
-
             gl_mult_mx(self.system.arms[armid].nodes[id-1].frame().matrix())
           list().call()
 

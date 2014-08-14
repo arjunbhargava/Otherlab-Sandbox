@@ -18,6 +18,7 @@ from kinematic_chain import *
 angle_path = [];
 
 
+
 def generate_targets(point, axis):
   axis = asarray(axis)
   axis = normalized(axis)
@@ -32,16 +33,16 @@ def generate_targets(point, axis):
 
 target_point = [1000, 0, 1000];
 target_axis = [0, 0,1]
-location = array([2000, 0,0])
+location = array([2400, 0,0])
 
+initial_rotation = pi
 
-
-armset1 = System([Arm('a1',6, effector_functions)], generate_targets(target_point, target_axis))
-armset_dummy = System([Arm('a2',6,effector_functions)], generate_targets(target_point, target_axis))
+armset1 = System([Arm('a1',6, effector_functions)], generate_targets(target_point, target_axis), 0)
+armset_dummy = System([Arm('a2',6,effector_functions)], generate_targets(target_point, target_axis),0)
    
-obstacle_arm_frame = Frames(location,Rotation.from_angle_axis(pi/2,array([0,0,1])))
-obstacle_arm = System([Arm('obstacle',6,effector_functions2,bf=obstacle_arm_frame)], generate_targets(target_point, target_axis))
-armset_dummy2 = System([Arm('obstacle2',6,effector_functions2,bf=obstacle_arm_frame)], generate_targets(target_point, target_axis))
+obstacle_arm_frame = Frames(location,Rotation.from_angle_axis(initial_rotation,array([0,0,1])))
+obstacle_arm = System([Arm('obstacle',6,effector_functions2,bf=obstacle_arm_frame)], generate_targets(target_point, target_axis),1)
+armset_dummy2 = System([Arm('obstacle2',6,effector_functions2,bf=obstacle_arm_frame)], generate_targets(target_point, target_axis),1)
 
 
 
@@ -49,40 +50,34 @@ def view():
   # Set up main window
   global angle_path
   global location
-  global target_axis
 
-  #app = QEApp(sys.argv,True)
-  #main = MainWindow(props)
-  #We're going to add some windows
-  #ks = KukaScene(armset1)
-  #ks2 = KukaScene(obstacle_arm)
-  #main.view.add_scene("kuka",ks)
-  #main.view.add_scene("kuka",ks2)
-  #main.view.show_all(True)
+  all_goals = getContour()
   goal_list = [];
   angle_goals = [];
-  for t in range(0, 1):
-    p1 = array([1250, 0, 1000 + 400 * (-2*t +1)]) #500 + 400*cos(pi/10 * t), 1425 + 300*sin(pi/10 *t)])
+  for t in range(0, 1):#len(goal_list)):
+    touch_point = all_goals[t];
+    print touch_point
+    p1 = array([1250, 0, 1400]) + touch_point #500 + 400*cos(pi/10 * t), 1425 + 300*sin(pi/10 *t)])
     goal_list.append(p1)
     coarse_samples = []
     target_list = []
     for cone_angle in linspace(pi/12, pi/24, 3):
       initial_axis = [sin(cone_angle), 0, cos(cone_angle)]
-      print initial_axis
+      counter = 0
       for i in linspace(0, 2* pi, 10):
         axis_r = Rotation.from_angle_axis(i, target_axis)
         sample_axis = axis_r * initial_axis
         armset_dummy.set_target(generate_targets(p1, sample_axis))
         armset_dummy2.set_target(generate_targets(p1, sample_axis))
-        goal = armset_dummy.solve_ik()
-        goal2 = armset_dummy2.solve_ik()
+        goal = armset_dummy.solve_ik(counter)
+        goal2 = armset_dummy2.solve_ik(counter)
         final_configuration = append(goal, goal2)
         coarse_samples.append(final_configuration)
         angle_goals.append(coarse_samples)
+        counter = counter + 1
   print goal_list
- # print target_list
   print angle_goals
-  goal_list.append(p1);
+
   robot_origins = asarray(get_origins())
   robot_origins2 = asarray(get_origins());
   both_origins = array([robot_origins, robot_origins2])
@@ -98,11 +93,11 @@ def view():
 #Array<Vector<real,3>,2> parsed_offsets, vector<vector<Ref<TriMesh>>> robotMeshes, vector<Ref<TriMesh>> obstacleMeshes, 
 #double resolution, double range, double solve_time, double initial_angle, initial locations, tolerance) 
 
-  angle_path = target_list #sample_path(6,2, goal_list, both_origins, both_meshes, [bunny()], .1, 50 , 30., pi/2, [array([0, 0, 0]), location], .01, angle_goals)
-  #print angle_path
+  angle_path = sample_path(6,2, goal_list, both_origins, both_meshes, 
+    [bike_mesh()], .1, 50 , 30., initial_rotation, [array([0, 0, 0]), location], .01, angle_goals, 0, 100)
 #  props.get("last_frame").set(len(angle_path))
     # main.resize_timeline(100);
-  plot_points(angle_path, array([0, 0, 0]))
+  plot_points(angle_path, goal_list)
   #kukaview = main.add_view("kuka")
  #Turn on the listener for props.get("frame"), then calls update (timeline updating)
   #l = listen(props.get("frame"),update)

@@ -75,7 +75,6 @@ struct System {
 	vector<Array<Vector<real, 3>>> positions;
 }; 
 
-
 vector<Vector<real,3>> samples; 
 Array<real> anglesFromState(System sys, const ob::State * state); 
 

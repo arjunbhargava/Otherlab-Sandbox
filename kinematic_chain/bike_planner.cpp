@@ -1,0 +1,615 @@
+#include <ompl/base/spaces/SO2StateSpace.h>
+#include <ompl/geometric/planners/rrt/RRT.h>
+#include <ompl/geometric/planners/rrt/RRTConnect.h>
+#include <ompl/geometric/planners/rrt/RRTstar.h>
+#include <ompl/geometric/planners/kpiece/KPIECE1.h>
+#include <ompl/geometric/planners/est/EST.h>
+#include <ompl/geometric/planners/prm/PRM.h>
+#include <ompl/geometric/planners/stride/STRIDE.h>
+#include <ompl/tools/benchmark/Benchmark.h>
+#include <ompl/base/goals/GoalSampleableRegion.h>
+#include <ompl/base/spaces/SO3StateSpace.h>
+#include <ompl/base/goals/GoalRegion.h>
+#include <ompl/base/goals/GoalStates.h>
+#include <boost/math/constants/constants.hpp>
+#include <boost/format.hpp>
+#include <geode/vector/Rotation.h>
+#include <geode/vector/Frame.h>
+#include <geode/python/wrap.h>
+#include <geode/vector/convert.h>
+#include <geode/array/Nested.h>
+#include <geode/openmesh/TriMesh.h>
+#include <geode/geometry/SimplexTree.h>
+#include <geode/geometry/ParticleTree.h>
+#include <geode/geometry/traverse.h>
+#include <geode/mesh/TriangleSoup.h>
+#include <geode/exact/collision.h>
+#include <ompl/util/Exception.h>
+#include <geode/utility/curry.h>
+#include <ompl/util/RandomNumbers.h>
+
+
+#include <math.h>
+#include <cmath>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <limits>
+
+
+//using namespace std;
+namespace ob = ompl::base;
+namespace og = ompl::geometric;
+using namespace geode;
+
+using std::vector;
+using std::cout;
+using std::endl;
+using std::cin;
+using std::string;
+
+namespace other {
+namespace{
+const double pi = boost::math::constants::pi<double>();
+int sample_counter = 0;
+double upper_kr16_bounds [] = {185, 125, 64, 165, 130, 350};
+double lower_kr16_bounds [] = {-185, -65, -210, -165, -130, -350};
+
+//Creating a struct of each linkage, used for rendering/ forward kinematics
+struct link_t {
+	Vector<real,3> axis;
+	double rotation_max;
+	double rotation_min;
+	Vector<real,3> offsets;
+	bool negate_rotation;
+};
+
+struct System {
+	unsigned int links;
+	unsigned int robot_number;
+	unsigned int stateDimension;
+	vector<link_t> axis_information;
+	vector<Vector<real,3>> initial_location;
+	Vector<real,3> target_position;
+	double initial_angle;
+	double tolerance;
+	vector<vector<Ref<TriMesh>>> robotMeshes;
+	vector<Ref<TriMesh>> obstacleMeshes;
+	vector<Ref<SimplexTree<Vector<real,3>,2>>> face_trees;
+	vector<Array<Vector<real, 3>>> positions;
+	int effector_offset;
+}; 
+
+vector<Vector<real,3>> samples; 
+Array<real> anglesFromState(System sys, const ob::State * state); 
+
+vector<Frame<Vector<real, 3>>> frame_from_state(System sys, Array<real> &state_angles) {
+
+	vector<Frame<Vector<real,3>>> frames;
+
+	for(unsigned int i = 0; i < sys.stateDimension; ++i) {	
+		int index = i%(sys.links);		
+		auto f = Frame<Vector<real,3>>(); 
+		int factor = sys.axis_information[i].negate_rotation ? -1 : 1; //For Kuka robots to move how we want them to
+
+		if(index == 0) {  
+			f.t = sys.axis_information[i].offsets + sys.initial_location[0]; //initial_location of robot 1
+			auto rotation_object = Rotation<Vector<real,3>>(factor * state_angles[i], sys.axis_information[i].axis); 
+			f.r = rotation_object;
+			if(i == 6) {
+				auto axis_rotation_object = Rotation<Vector<real,3>>(sys.initial_angle, sys.axis_information[i].axis);
+				frames.push_back(Frame<Vector<real, 3>>(axis_rotation_object * sys.axis_information[i].offsets 
+				+ sys.initial_location[1], rotation_object * axis_rotation_object)); //initial locatin of robot 2
+			} else frames.push_back(f);
+
+		} else {
+			f = frames.back();
+			auto rotation_object = Rotation<Vector<real,3>>(factor * state_angles[i], f.r * sys.axis_information[i].axis);
+			frames.push_back(Frame<Vector<real,3>>(f.t + f.r * sys.axis_information[i].offsets, rotation_object * f.r ));
+		}		
+	}		
+	return frames;
+}
+
+class ChainSpace : public ob::CompoundStateSpace {
+
+	public: 
+		//Constructor for new space called chainspace
+		ChainSpace(System &sys): ob::CompoundStateSpace(), sys_(sys)//Inherits from compound state space
+		{
+			for(unsigned int i = 0; i < sys.stateDimension; ++i) {
+				ob::StateSpacePtr subspace = ob::StateSpacePtr(new ob::SO2StateSpace());
+				addSubspace(subspace, 1.0);
+			}
+			lock(); //Doesn't allow future changes to the subspace
+		}
+
+		//Define a distance between 2 states
+		double distance(const ob::State *state1, const ob::State *state2) const
+    	{	
+	    	vector<Vector<real,3>> end_positions1 = effectorPositions(state1,1);
+	    	vector<Vector<real,3>> end_positions2 = effectorPositions(state2,1);
+	    	double distance = magnitude(end_positions1[0] - end_positions2[0]);
+	    	double distance2 = magnitude(end_positions1[1] - end_positions2[1]);
+	    	return sqrt(distance*distance + distance2*distance2);
+   		}
+
+   		Vector<real,2> distanceToGoal(const ob::State * state) const 
+   		{
+	        vector<Vector<real,3>> end_positions = effectorPositions(state,1);
+		    double distance1 = magnitude(end_positions[0] -  sys_.target_position);
+		  	double distance2 = magnitude(end_positions[1] - sys_.target_position);
+		    return Vector<real,2>(distance1, distance2);
+   		}
+
+   		vector<Vector<real,3>> effectorPositions(const ob::State * state, int effector_flag) const
+   		{
+   			Array<real> joint_angles = anglesFromState(sys_, state);
+   			vector<Frame<Vector<real,3>>> link_frames =	frame_from_state(sys_, joint_angles);
+   			if(effector_flag == 1) {
+   				vector<Vector<real,3>> end_positions;
+	   			for(unsigned int i = 0; i < sys_.robot_number; i++) {
+			    		int index = sys_.links* (i+1) -1;
+			    		Frame<Vector<real,3>> effector = link_frames[index];
+			    		end_positions.push_back(effector.t + effector.r * (sys_.effector_offset * sys_.axis_information[index].axis));
+			    }
+		    return end_positions;
+		   
+		    } else {
+		    	vector<Vector<real,3>> link_positions;
+		    	for(unsigned int i = 0; i < sys_.stateDimension; i++) {
+		    		Frame<Vector<real,3>> effector = link_frames[i];
+		    		link_positions.push_back(effector.t);
+		    	}
+		    return link_positions;
+		    }
+   		}
+
+	protected:
+		System sys_;
+
+};
+
+Array<real> anglesFromState(System sys, const ob::State * state) 
+{
+	Array<real> joint_angles(sys.stateDimension);
+		const ChainSpace::StateType *cstate1 = static_cast<const ChainSpace::StateType*>(state); 
+			for(unsigned int i = 0; i < sys.stateDimension; ++i) {
+				joint_angles[i] = cstate1->components[i]->as<ob::SO2StateSpace::StateType>()->value;
+			}
+
+		return joint_angles;
+}
+
+class SO26ValidityChecker : public ob::StateValidityChecker
+{
+	public:
+	    
+	    SO26ValidityChecker(const ob::SpaceInformationPtr &si, System &sys): ob::StateValidityChecker(si), sys_(sys), space_(new ChainSpace(sys))
+	    {
+			for(unsigned int i = 0; i < sys.obstacleMeshes.size(); i++) {
+				obstacle_trees.push_back(sys.obstacleMeshes[i]->face_tree());
+				obstacle_positions.push_back(obstacle_trees[i]->X.copy());
+			}
+ 		 }
+
+	    bool isValid(const ob::State *state) const
+	    {	
+	    	vector<Vector<real,3>> end_positions1 = space_->effectorPositions(state,1);
+	    	samples.push_back(end_positions1[0]);
+	    	samples.push_back(end_positions1[1]);
+
+	    	Array<real> joint_angles(sys_.stateDimension);
+			const ChainSpace::StateType *cstate1 = static_cast<const ChainSpace::StateType*>(state); 
+			for(unsigned int i = 0; i < sys_.stateDimension; ++i) {
+				double angle = cstate1->components[i]->as<ob::SO2StateSpace::StateType>()->value * 180/pi;
+				int index = i%sys_.links;
+				if(angle > upper_kr16_bounds[index] || angle < lower_kr16_bounds[index]) {
+					//cout << "Angle failure on linkage " << index << endl;
+					return false;
+				}
+				joint_angles[i] = angle * pi/180;
+			}
+			
+			generate_mesh(joint_angles);
+			if(mesh_self_collisions_wrapper()) return false;
+			if(mesh_other_collisions_wrapper()) return false;
+			if(sys_.obstacleMeshes.size() > 0)
+				return !robot_other_collisions_wrapper();
+			return true;
+	    }
+
+	private:
+
+		bool mesh_collisions(Ref<SimplexTree<Vector<real,3>,2>> face_tree1, Ref<SimplexTree<Vector<real,3>,2>> face_tree2) const {
+			auto X = face_tree1->X;
+			auto X2 = face_tree2->X;
+			const TriangleSoup& faces = face_tree1->mesh;
+			const TriangleSoup& face2 = face_tree2->mesh;
+
+			//Find intersectino between faces
+		    struct {
+		      const Ref<const SimplexTree<Vector<real,3>,2>> face_tree1;
+		      const Ref<const SimplexTree<Vector<real,3>,2>> face_tree2;
+		      const RawArray<const Vector<real,3>> X;
+		      const RawArray<const Vector<real,3>> X2;
+
+		      bool cull(const int ne, const int nf) const { return false; }
+
+		      void leaf(const int ne, const int nf) {
+		      	auto leaf_size1 = face_tree1->leaf_size;
+		      	auto leaf_size2 = face_tree2->leaf_size;
+
+		      	for(auto face1 : face_tree1->prims(ne)) {
+		      		for(auto face2 : face_tree2->prims(nf)) {
+				        const auto fv1 = face_tree1->mesh->elements[face1];
+				        const auto fv2 = face_tree2->mesh->elements[face2];
+				           
+				        if (triangle_triangle_intersection(X[fv1.x], X[fv1.y], X[fv1.z], X2[fv2.x], X2[fv2.y], X2[fv2.z])) 		
+							throw -1;
+					}
+				}
+		      
+		      }
+		    } helper({face_tree1, face_tree2, X, X2});
+
+		    try {
+			    double_traverse(*face_tree1,*face_tree2,helper);
+			} catch(int e) {
+				return true;
+			}		
+		    return false;
+		}
+		
+		bool robot_other_collisions_wrapper() const {
+			for(unsigned int i = 0; i < sys_.stateDimension; i++) {
+				for(unsigned int j = 0; j < obstacle_trees.size(); j++) {
+					if(mesh_collisions(sys_.face_trees[i], obstacle_trees[j])) {
+				//		cout << "Hit a bunny" << endl;
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		bool mesh_other_collisions_wrapper() const {
+			for(unsigned int i = 0; i < sys_.links; i++) {
+				for(unsigned int j = i; j < sys_.links; j++) {
+					int index = i;
+					int index2 = sys_.links + j;
+					if(mesh_collisions(sys_.face_trees[index], sys_.face_trees[index2])) {
+				//		cout << "Got collision on  meshes:" << i << ", " << j << endl;
+				//		cout << "Mesh 1 has: " << sys_.robotMeshes[0][i]->n_faces() << " faces. Mesh 2 has: " << sys_.robotMeshes[0][j]->n_faces() << " faces." << endl;
+						return true;
+					}
+				}
+			}	
+			return false;
+		}
+
+		bool mesh_self_collisions_wrapper() const {
+			for(unsigned int i = 0; i < sys_.robot_number; i++) {
+				for(unsigned int j = 0; j < sys_.links-1; j++) {
+					for(unsigned int k = j+1; k < sys_.links; k++) {
+						if(k-j > 1) {
+							int index = i * sys_.links + j;
+							int index2 = i * sys_.links + k;
+							if(mesh_collisions(sys_.face_trees[index], sys_.face_trees[index2])) {
+				//				cout << "Got self collision comparing robot" << i << "And meshes:" << j << ", " << k << endl;
+				//				cout << "Mesh 1 has: " << sys_.robotMeshes[i][j]->n_faces() << " faces. Mesh 2 has: " << sys_.robotMeshes[i][k]->n_faces() << " faces." << endl;
+								return true;
+							}
+						}
+					}	
+				}
+			}
+			//cout << "This time, there were " << counter << " self collisions" << endl;
+			return false;
+		}
+  		
+		void generate_mesh(Array<real> joint_angles) const { 
+
+			vector<Frame<Vector<real,3>>> frames = frame_from_state(sys_, joint_angles);
+			for(unsigned int i = 0; i < sys_.robot_number; i++) {
+				for(unsigned int j = 0; j < sys_.robotMeshes[i].size(); j++) {
+					int index = i * sys_.links  + j;
+					Frame<Vector<real,3>> this_frame = frames[index];
+					sys_.face_trees[index]->X.const_cast_().copy(this_frame * sys_.positions[index]);
+					sys_.face_trees[index]->update();
+				}
+			}
+
+
+			for(unsigned int i = 0; i < obstacle_trees.size(); i++) {
+				Frame<Vector<real,3>> end_frame = frames[5];
+				Vector<real,3> additional_offset = end_frame.r * sys_.axis_information[5].axis * sys_.effector_offset;
+				obstacle_trees[i]->X.const_cast_().copy(end_frame * obstacle_positions[i] + additional_offset);
+				obstacle_trees[i]->update();
+			}
+		}
+
+	protected:
+		System sys_;
+		vector<Ref<SimplexTree<Vector<real,3>,2>>> obstacle_trees;
+		vector<Array<Vector<real, 3>>> obstacle_positions;
+		ChainSpace* space_;
+};
+/*
+class  pointNormalGoal : public ob::GoalRegion
+{
+	public:
+	    pointNormalGoal(const ob::SpaceInformationPtr &si, System &sys) : ob::GoalRegion(si), sys_(sys), space_(new ChainSpace(sys))
+	    {
+	    	setThreshold(sys.tolerance);
+	    	samplePosition_ = 0;
+	    }
+
+	    virtual bool isSatisfied(const ob::State *st) const {
+	    	return true;
+	    }
+
+	    virtual bool isSatisfied(const ob::State *st, double *distance) const {
+	    	double d = distanceGoal(st);
+	    	if(d < threshold_) {
+	    		*distance = d;
+	    		Array<real> joint_angles = anglesFromState(sys_, st);
+	    		vector<Frame<Vector<real,3>>> frames = frame_from_state(sys_, joint_angles);
+	    		Vector<real,3> axis1 = frames[5].r * sys_.axis_information[5].axis;
+	    		Vector<real,3> axis2 = frames[11].r * sys_.axis_information[11].axis;
+	    		cout << axis1 << ", " << axis2 << endl;
+	    		double product = dot(axis1, axis2); 
+	    		cout << product << endl;
+	    		if(product > .9)
+		    		return true;
+		    	else return false;
+	    	} else {
+	    		*distance = d;
+	    		return false;
+	    	}
+	    }
+
+	    virtual double distanceGoal(const ob::State *st) const 
+	    {	
+	    	vector<Vector<real,3>> end_positions1 = space_->effectorPositions(st,1);
+	    	samples.push_back(end_positions1[0]);
+	    	samples.push_back(end_positions1[1]);
+	    	Vector<real,2> distances = space_->distanceToGoal(st);
+	        return sqrt(distances[0] * distances[0] + distances[1]*distances[1]);
+	    }
+
+	   	virtual void addState(ob::State * st) {
+	   		goalStates_.push_back(st);
+	   	}
+
+	   	void sampleGoal(ob::State *st) const
+		{	
+			cout << "Got in here??" << endl;
+	   		if (goalStates_.empty()) throw -1;
+		    si_->copyState(st, goalStates_[samplePosition_]);
+		    samplePosition_ = (samplePosition_ + 1) % goalStates_.size();
+		}
+
+
+	private: 
+		mutable unsigned int samplePosition_;
+
+	protected: 
+	   	System sys_;
+	   	ChainSpace* space_;
+	   	vector<ob::State *> goalStates_;
+};
+*/
+
+class  pointNormalGoal : public ob::GoalStates
+{
+	public:
+	    pointNormalGoal(const ob::SpaceInformationPtr &si, System &sys) : ob::GoalStates(si), sys_(sys), space_(new ChainSpace(sys))
+	    {
+	    	setThreshold(sys.tolerance);
+	    }
+
+	    virtual double distanceGoal(const ob::State *st) const 
+	    {	
+	    	vector<Vector<real,3>> end_positions1 = space_->effectorPositions(st,1);
+	    	samples.push_back(end_positions1[0]);
+	    	samples.push_back(end_positions1[1]);
+	    	Vector<real,2> distances = space_->distanceToGoal(st);
+	        return sqrt(distances[0] * distances[0] + distances[1]*distances[1]);
+	    }
+
+	    	  
+	protected: 
+	   	System sys_;
+	   	ChainSpace* space_;
+
+};
+
+
+void initializeAxes(System &sys, Array<Vector<real,3>,2> &offsets) 
+{	
+	vector<link_t> axis_information;
+	Vector<real, 3> x_axis(1,0,0);
+	Vector<real, 3> y_axis(0,1,0);
+	Vector<real, 3> z_axis(0,0,1);
+
+	for(int o = 0; o < (int) sys.robot_number; ++o) {
+		auto robot_offsets = offsets[o];
+
+		for(unsigned int i = 0; i < sys.links; ++i) {
+			link_t this_node;
+			this_node.rotation_min = lower_kr16_bounds[i];
+			this_node.rotation_max = upper_kr16_bounds[i];
+			this_node.offsets = i==0 ? robot_offsets[i] : robot_offsets[i] - robot_offsets[i-1]; //nodes.back().offsets;//;
+			
+			if(i == 3 || i == 5)
+				this_node.axis = x_axis;
+			else if(i == 0)
+				this_node.axis = z_axis;
+			else
+				this_node.axis = y_axis;
+
+			if(this_node.axis == z_axis || this_node.axis == x_axis)
+				this_node.negate_rotation = true;
+			else 
+				this_node.negate_rotation = false;
+
+			axis_information.push_back(this_node);
+		}
+	}
+	sys.axis_information = axis_information;
+}
+
+
+
+static Nested<real> plan(unsigned int links, double robot_number, vector<Vector<real,3>> goalState, Array<Vector<real,3>,2> parsed_offsets, 
+	vector<vector<Ref<TriMesh>>> robotMeshes, vector<Ref<TriMesh>> obstacleMeshes, double resolution, double range, double solve_time, 
+	double initial_angle, vector<Vector<real, 3>> initial_location, double tolerance, vector<vector<Array<real>>> goalAngles, bool smoothingFlag, int effector_offset) 
+{
+	/*We start by setting up a system so that everything can be passed around without a giant fucking method every time*/
+	System sys;
+	sys.links = links;
+	sys.robot_number = robot_number;
+	sys.robotMeshes = robotMeshes;
+	sys.obstacleMeshes = obstacleMeshes;
+	sys.initial_angle = initial_angle;
+	sys.initial_location = initial_location;
+	sys.tolerance = tolerance;
+	sys.stateDimension = links * robot_number;
+	sys.effector_offset = effector_offset;
+
+	//Set up the node structure from the given files. 
+	initializeAxes(sys, parsed_offsets);
+	//Initialize the facetrees from the default positions of the robots. 
+	//Mostly just want to have this original configuration, everything else is in terms of angles
+	for(unsigned int i = 0; i < robot_number; i++) {
+		for(unsigned int j = 0; j < robotMeshes[i].size(); j++) {
+			int index = i * links  + j;
+			sys.face_trees.push_back(robotMeshes[i][j]->face_tree());
+			sys.positions.push_back(sys.face_trees[index]->X.copy());
+		}
+	}
+
+	ob::StateSpacePtr temp_space(new ChainSpace(sys));
+	ob::ScopedState<ob::CompoundStateSpace> start(temp_space);
+	ob::ScopedState<ob::CompoundStateSpace> end_state(temp_space);	
+	end_state.random();
+//	ob::ScopedState<ob::CompoundStateSpace> goal(space);
+	//Path planning for multiple goals	
+   	Nested<real,false> path;
+	for(size_t k = 0; k < goalState.size(); k++) {
+		
+		sys.target_position = goalState[k];			
+		ob::StateSpacePtr space(new ChainSpace(sys));
+		ob::SpaceInformationPtr si(new ob::SpaceInformation(space));
+		si->setStateValidityChecker(ob::StateValidityCheckerPtr(new SO26ValidityChecker(si, sys)));
+		si->setStateValidityCheckingResolution(resolution);
+
+	
+
+		for(unsigned int index = 0; index < si->getStateDimension(); ++index) {
+			if(k == 0) {
+				start->as<ob::SO2StateSpace::StateType>(index)->value = 0;
+			} else { 
+				start = end_state;
+			}
+		}
+
+		pointNormalGoal* goalSet = new pointNormalGoal(si,sys);
+		for(unsigned int i = 0 ; i < goalAngles[k].size(); i++) {
+			ob::State *state = space->allocState();
+			ChainSpace::StateType *cstate = static_cast<ChainSpace::StateType*>(state); 
+			for(int j = 0; j < goalAngles[k][i].size(); j++) {
+				cstate->components[j]->as<ob::SO2StateSpace::StateType>()->value = goalAngles[k][i][j];
+			}
+			goalSet->addState(state);
+		}
+		
+
+		og::PathSimplifier simplifier(si);
+		og::RRTConnect* solver  = new og::RRTConnect(si);
+   		solver->setRange(range);	
+   		ob::PlannerPtr planner(solver);
+
+   		ob::ProblemDefinitionPtr pdef(new ob::ProblemDefinition(si));
+		pdef->addStartState(start);
+	   	pdef->setGoal(ob::GoalPtr(goalSet));
+	    planner->setProblemDefinition(pdef);
+	    planner->setup();
+
+	  // cout << "We're now going to print the space settings" << endl;
+	    si->printSettings(cout);
+
+	   // cout << "We're now going to print the problem settings" << endl;
+	   	pdef->print(cout);
+
+	    //cout << "We've finished printing the problem settings, printing solution..." << endl;
+	    // attempt to solve the problem within ten seconds of planning time
+	    ob::PlannerStatus solved = planner->solve(solve_time);
+	    if(!solved) {
+			og::PathSimplifier simplifier(si);
+			og::RRT* solver  = new og::RRT(si);
+		   	solver->setRange(range);	
+		   	ob::PlannerPtr planner(solver);
+		   	planner->setProblemDefinition(pdef);
+	    	planner->setup();
+		   	planner->solve(solve_time);
+		   	exit(0);
+	    }
+
+		vector<real> step_vector;
+
+	    if (solved)
+	    {
+	        ob::PathPtr solution_path = pdef->getSolutionPath();
+	        og::PathGeometric geopath = dynamic_cast<og::PathGeometric &>(*solution_path);
+	       	if(smoothingFlag) {
+		        if(simplifier.shortcutPath(geopath, 0, 0, .1)) {
+		        	simplifier.smoothBSpline(geopath);
+		        	cout << "Simplified the path? " << endl;
+		        }
+	    	}
+	       	vector<ob::State *> path_states = geopath.getStates();
+
+	        for(unsigned int i = 0; i < path_states.size(); ++i) {
+	        	ChainSpace::StateType* cstate1 = static_cast<ChainSpace::StateType*>(path_states[i]);
+	        	for(unsigned int j = 0; j < si->getStateDimension(); ++j) {
+	        		step_vector.push_back(cstate1->components[j]->as<ob::SO2StateSpace::StateType>()->value);
+	        		if(i == path_states.size() - 1) {
+	        			end_state->as<ob::SO2StateSpace::StateType>(j)->value = 
+	        				cstate1->components[j]->as<ob::SO2StateSpace::StateType>()->value;
+	        		}
+	        	}
+	      		path.append(asarray(step_vector).copy());
+	      		cout << asarray(step_vector).copy() << endl;
+	      		step_vector.clear();
+	        }
+	        cout << end_state << endl;
+	        cout << "Found solution" << endl;
+
+	    } else {
+	        cout << "No solution found" << endl;
+	        step_vector.push_back(0);
+	        path.append(asarray(step_vector).copy());
+	        exit(0);
+		}
+	}
+	return path;
+}
+
+vector<Vector<real,3>> sample_function(unsigned int links, double robot_number, vector<Vector<real,3>> goalState, Array<Vector<real,3>,2> parsed_offsets, 
+	vector<vector<Ref<TriMesh>>> robotMeshes, vector<Ref<TriMesh>> obstacleMeshes, double resolution, double range, double solve_time, 
+	double initial_angle, vector<Vector<real, 3>> initial_location, double tolerance, vector<vector<Array<real>>> goal_angles, bool smoothingFlag, int effector_offset) 
+{
+	plan( links, robot_number, goalState, parsed_offsets, robotMeshes, obstacleMeshes,  resolution,  range,  solve_time, initial_angle,  initial_location,  tolerance, goal_angles, smoothingFlag, effector_offset);
+	return samples;
+}
+
+}
+}
+using namespace other;
+
+void wrap_restructured_goal_planner(){
+	geode::python::function("plan_goals",plan);
+	geode::python::function("sample_path", sample_function);
+}
