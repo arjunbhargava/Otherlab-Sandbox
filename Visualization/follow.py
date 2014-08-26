@@ -22,8 +22,10 @@ def getContours():
   touch = 'pts.txt'
   contours = [ [float(i) for i in l.strip().split(' ')] for l in open(touch)]  
   for i, val in enumerate(contours):
-    contours[i] = Rotation.from_angle_axis(pi/2, [0, 0 , 1]) * val
+  #  contours[i] = contours[i] + array([0, 0,-300])
+    contours[i] = Rotation.from_angle_axis(pi/2, [0, 0 , 1]) * contours[i]
     contours[i] = Rotation.from_angle_axis(-pi/2, [0, 1, 0]) * contours[i]
+
   return contours
 
 def get_origins():
@@ -32,6 +34,7 @@ def get_origins():
 def bike_mesh():
   bike = TriMesh()
   bike.read("bike_mesh.om")
+  #bike.translate(array([0, 0, -300]))
   bike.set_X(Rotation.from_angle_axis(pi/2, [0, 0, 1]) * bike.X())
   bike.request_face_normals()
   bike.request_vertex_normals()
@@ -84,6 +87,9 @@ def left(node):
 
 def right(node):
   return node.frame().t + node.frame().r*array([1.,0,0])*0 + node.frame().r*array([0., 1., 0.])*25 + node.frame().r*array([0., 0., 1.])*-25;#end_effector(node) 
+
+def middle(node):
+  return node.frame().t
 
 class Arm(object):
   def __init__(self,n,dof,eff_functions,bf=Frames(array([0.,0.,0.]),Rotation.from_angle_axis(0.,array([1.,0.,0.])))):
@@ -247,7 +253,7 @@ class System():
       e[i] = self.this_clamp(v, 350.)
 
     iters = 0
-    while norm(e) > .01 and iters < 1e2:
+    while norm(e) > .01 and iters < 2e2:
       iters+=1
       e = self.targets()-self.effectors()
       for i,v in enumerate(e):
@@ -300,15 +306,11 @@ class System():
         p.set(p() + val*180/pi)
       
     initial_theta = array([p()*pi/180 for p in self.axis_props()])
-    if iters == 1e2:
-      timeout = 1
-    else: timeout = 0
-    return initial_theta, timeout
+    return initial_theta, e
 
   def bike(self):
     frame = self.arms[0].nodes[-1].frame()
     bike = bike_mesh()    
-    #bike.set_X(Rotation.from_angle_axis(-pi/2, [0, 1, 0]) * bike.X())
     bike.set_X(frame * bike.X())
     bike.translate(frame.r * (array([1,0,0]) * 100))
     bike.request_face_normals()
@@ -316,38 +318,49 @@ class System():
     bike.update_normals()
     return bike
 
+    #At this point, the bike mesh has been rotated such that 
+    #if it were rotated by the robot, the robot's end effector will be pointing up. Therefore, the normals 
+    #should be calculate from here. We'll start by saying that if there's a 90 degree or less difference that
+    #we'll stay just pointing straight up, if it's more than that we'll flip down. The translation is handled in 
+    #bike_mesh(.)
 
   def pointNormals(self):
     points = getContours()
     this_bike = bike_mesh()
     this_bike.set_X(Rotation.from_angle_axis(-pi/2, [0, 1, 0]) *this_bike.X())
-    #At this point, the bike mesh has been rotated such that 
-    #if it were rotated by the robot, the robot's end effector will be pointing up. Therefore, the normals 
-    #should be calculate from here. We'll start by saying that if there's a 90 degree or less difference that
-    #we'll stay just pointing straight up, if it's more than that we'll flip down.
     bikeft = this_bike.face_tree()
+
     rotation_axes = []
     rotation_angles = []
     normals = []
     target_axes = []
+
     for i, p in enumerate(points):
-       close_point = bikeft.closest_point(p, 200)
-       p = close_point[0]
-       normal = this_bike.smooth_normal(close_point[1], close_point[2])
-       normals.append(normal)
-       rotation_axis = cross(normal, [0, 0, 1])      
-       rotation_angle = acos(clamp(dot([0,0, 1], normal), -1, 1))
-       rotation_axes.append(rotation_axis)
-       rotation_angles.append(rotation_angle)
-       points[i] =  Rotation.from_angle_axis(rotation_angle, rotation_axis) * p;
-       target_axes.append(Rotation.from_angle_axis(rotation_angle, rotation_axis) * array([0, 0, 1]))
+        close_point = bikeft.closest_point(p, 200)
+        p = close_point[0]
+        normal = this_bike.smooth_normal(close_point[1], close_point[2])
+        normals.append(normal)
+        rotation_axis = cross(normal, [0, 0, 1])      
+        rotation_angle = acos(clamp(dot([0,0, 1], normal), -1, 1))
+        rotation_axes.append(rotation_axis)
+        rotation_angles.append(rotation_angle)
+        print normals[i]
+        if rotation_angle > pi/2:
+          target_axes.append(array([0,0,-1]))
+   #       normals[i] = Rotation.from_angle_axis(pi - rotation_angle, -rotation_axis) * array([0, 0, 1])
+        else: 
+          target_axes.append(array([0,0,1]))
+    #      normals[i] = Rotation.from_angle_axis(rotation_angle, rotation_axis) * array([0, 0, 1])
+       # points[i] =  Rotation.from_angle_axis(rotation_angle, rotation_axis) * p;
+       # print i, rotation_angles[i], normals[i]
+
     return points, rotation_axes, rotation_angles, target_axes, normals
 
 
 #frame2 = Frames(array([2043.,0.,0.]),Rotation.from_angle_axis(pi,array([0.,0.,1.])))
 
-effector_functions = [up, left, right]#, middle]
-effector_functions2 = [up, right, left]#, middle]  
+effector_functions = [up, left, right]# middle]
+effector_functions2 = [up, right, left] #middle]  
 
 class KukaScene(Scene):
   def __init__(self,system):
@@ -359,7 +372,7 @@ class KukaScene(Scene):
 
   def render(self,*args):
     for i, e in enumerate(self.system.effectors()):
-      GL.glPointSize(25)
+      GL.glPointSize(20)
       GL.glBegin(GL.GL_POINTS)
       v = [0., 0., 0.];
       v[i%3]= 1
@@ -370,9 +383,9 @@ class KukaScene(Scene):
 
     for i, e in enumerate(self.system.targets()):
       if i == len(self.system.targets())-1:
-        GL.glPointSize(10)
+        GL.glPointSize(20)
       else:
-        GL.glPointSize(10)
+        GL.glPointSize(5)
       GL.glBegin(GL.GL_POINTS)
       v = [0., 0., 0.];
       v[i%3]= 1

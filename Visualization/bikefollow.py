@@ -24,6 +24,7 @@ def getContours():
   for i, val in enumerate(contours):
     contours[i] = Rotation.from_angle_axis(pi/2, [0, 0 , 1]) * val
     contours[i] = Rotation.from_angle_axis(-pi/2, [0, 1, 0]) * contours[i]
+    contours[i] = contours[i] + array([300, 0, 0])
   return contours
 
 def get_origins():
@@ -33,6 +34,7 @@ def bike_mesh():
   bike = TriMesh()
   bike.read("bike_mesh.om")
   bike.set_X(Rotation.from_angle_axis(pi/2, [0, 0, 1]) * bike.X())
+  bike.translate(array([300, 0, 0]))
   bike.request_face_normals()
   bike.request_vertex_normals()
   bike.update_normals()

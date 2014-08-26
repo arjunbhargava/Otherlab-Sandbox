@@ -16,12 +16,33 @@ from scatter_points import *
 from kinematic_chain import *
 
 angle_path = [];
-target_point = [1200,0, 1400]
+target_point = [500,0, 1100]
 target_axis = [0, 0, 1]
 initial_rotation = 0 
-unstructured_path = []
+unstructured_path1 = []
+plane = True
+smoothing = 0
 
-def generate_targets(point, axis, rotation):
+def convertUnstructured(angle_path):
+  unstructured_path = [] 
+  for i in range(0, len(angle_path)):
+    for j in range(0, len(angle_path[i])):
+      unstructured_path.append(asarray(angle_path[i][j]))
+  return unstructured_path
+
+
+def inverse_targets(point, axis, rotation):
+  r = Rotation.from_angle_axis(rotation, axis)
+  axis = normalized(asarray(axis))
+  axis2 = unit_orthogonal_vector(axis);
+  axis3 = normalized(cross(axis2, axis))
+  p1 = [];
+  p1.append(point + r*(axis2 * -25 + axis3 * 25))
+  p1.append(point + r*(axis2 * sqrt(25**2 + 25**2)))
+  p1.append(point + r*(axis2 * -25 + axis3 * -25))  
+  return asarray(p1);
+
+def generate_targets(point, axis, rotation, flip):
   r = Rotation.from_angle_axis(rotation, axis)
   axis = normalized(asarray(axis))
   axis2 = unit_orthogonal_vector(axis);
@@ -30,67 +51,74 @@ def generate_targets(point, axis, rotation):
   p1.append(point + r*(axis2 * sqrt(25**2 + 25**2)))
   p1.append(point + r*(axis2 * -25 + axis3 * -25))
   p1.append(point + r*(axis2 * -25 + axis3 * 25))
+  if flip:
+ #   for i in range(0, len(p1)):
+    orientation_vector = target_point - point#p1[i]
+   # angle = acos(clamp(orientation_vector, array([0, 0, 1]), -1, 1))  
+    r2 = Rotation.from_angle_axis(pi, normalized(cross(orientation_vector, array([0, 0, 1])))) 
+    p1 = r2 * (asarray(p1) - asarray(target_point)) + asarray(target_point)
   return asarray(p1);
 
-armset1 = System([Arm('a1',6, effector_functions)], generate_targets(target_point, target_axis, 0), 0)
-armset_dummy = System([Arm('a2',6,effector_functions)], generate_targets(target_point, target_axis, 0),0)
+armset1 = System([Arm('a1',6, effector_functions)], generate_targets(target_point, target_axis, 0, False), 0)
+armset_dummy = System([Arm('a2',6,effector_functions)], generate_targets(target_point, target_axis, 0, False),0)
 
 def update_1():
   frame = props.get("frame")()
-  state = unstructured_path[int(frame)]
+  state = unstructured_path1[int(frame)]
   for arm in armset1.arms:
     for i, node in enumerate(arm.nodes):
       node.rotation.set(float(state[i]) * 180/pi)
 
-def setup_1(): 
+def setup_1(step1, step2): 
   global angle_path
   global location
   angle_goals = [];
   points = []
   goal_list = [];
   
+  flip = False
   all_goals, rotation_axes, rotation_angles, target_axes, normals = armset1.pointNormals()
-  target_axes = []
+  this_target = []
   all_goals = getContours()
-  for t in range(0, 1): #Check the logic here...
-    print t
-#    if rand() < 1:
-    sample_axis = array([0, 0, 1])
-#    else: sample_axis = array([0, 0, -1])
 
-    target_axes.append(sample_axis)
-    counter = 0
+  for t in range(step1, step2):
     touch_point = all_goals[t]
-    print touch_point
-    goal_list.append(target_point)  
+    sample_axis = target_axes[t]
+    counter = 0
+    if sample_axis[2] == -1:
+      flip = True
+    else: flip = False
     coarse_samples = []
     counter = 0
-    for theta in linspace(-pi, pi, 13): 
-      r = Rotation.from_angle_axis(theta, sample_axis)
-      p1 = target_point - r * touch_point
-      triangle = generate_targets(p1, sample_axis, theta)
-      # points.append(p1)
+
+    this_target = target_point
+    goal_list.append(this_target)  
+
+    for theta in linspace(0, 2*pi,7): 
+      r = Rotation.from_angle_axis(theta, array([0, 0, 1]))
+      p1 = this_target - r * touch_point
+      triangle = generate_targets(p1, array([0, 0, 1]), theta, flip)
+      armset_dummy.set_target(triangle)
       points.append(triangle[0])
       points.append(triangle[1])
       points.append(triangle[2])
-      armset_dummy.set_target(triangle)
-      goal, timeout = armset_dummy.solve_ik(counter)
+      goal, e = armset_dummy.solve_ik(counter)
       coarse_samples.append(goal)
     angle_goals.append(coarse_samples)
-  pp = target_point + array([0,0,100])
+  pp = this_target + sample_axis*100
   points.append(pp)
   armset1.set_target(points)
   #Visualize where we're doing the initial sampling
-#  scatter_points(points)
+  #scatter_points(points)
 
-  return goal_list, angle_goals, target_axes
+  return goal_list, angle_goals, normals
 
 
-def solve_1():
+def solve_1(step1, step2):
   global angle_path
-  global unstructured_path
+  global unstructured_path1
   print "Solving 1"
-  goal_list, angle_goals, target_axes = setup_1() 
+  goal_list, angle_goals, normals = setup_1(step1, step2) 
   #Get the initial offsets for the robot meshes
   robot_origins = asarray(get_origins())
 
@@ -99,20 +127,19 @@ def solve_1():
     robot_meshes = arm.submeshes()
  
   angle_path = plan_1(6, goal_list, robot_origins, robot_meshes, 
-    [bike_mesh()], .1, 50 , 10., initial_rotation, array([0, 0, 0]), .01, angle_goals, 0, 100)
+    [bike_mesh()], .1, 100 , 10., initial_rotation, array([0, 0, 0]), .01, angle_goals, smoothing, 100)
 
-  for i in range(0, len(angle_path)):
-    for j in range(0, len(angle_path[i])):
-      unstructured_path.append(asarray(angle_path[i][j]))
-  return angle_path, target_axes
+  unstructured_path1 = convertUnstructured(angle_path)
 
-def getAnglePath():
-  return solve_1()
+  return angle_path, normals, target_point
+
+def getAnglePath(step1, step2):
+  return solve_1(step1, step2)
 
 
 def view_1():
   # Set up main window
-  solve_1()
+  solve_1(9, 10)
   app = QEApp(sys.argv,True)
   main = MainWindow(props)
   ks = KukaScene(armset1)
@@ -120,7 +147,7 @@ def view_1():
   main.view.show_all(True)
 
   #Set up the actual targets for the RRT
-  props.get("last_frame").set(len(unstructured_path)) 
+  props.get("last_frame").set(len(unstructured_path1)) 
   main.resize_timeline(100);
   l = listen(props.get("frame"),update_1)
   main.init()
