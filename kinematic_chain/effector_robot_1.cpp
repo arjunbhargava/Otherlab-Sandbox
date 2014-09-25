@@ -1,3 +1,5 @@
+//If there's a function you can't find, it's probably in RobotSystem.h. 
+
 #include <ompl/base/spaces/SO2StateSpace.h>
 #include <ompl/geometric/planners/rrt/RRT.h>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>

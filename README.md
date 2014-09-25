@@ -17,8 +17,9 @@ Otherlab/
 
 		Visualization/ 
 			The contents of this folder can be sorted roughly into 2 kinds of files - general rendering/handling files, and the ik files. 
-			Important files: 
+			Important files:			 
 				effectorik.py - The inverse kinematics which treat a point on the bike frame as the effector. 
 				plan_1.py - Plans and renders the first robot
 				timed_plan.py - Calls plan_1.py and then computes a new path for the second robot based on the path of the first robot. 			 
 		
+These files compose the most recent version of what I had worked on. They use a SLDS for the IK, and a bi directional RRT for the path planning. The initial goals are computed by seeding the space with possible solutions and then allowing the RRTs to grow from any of these potential goal states. 

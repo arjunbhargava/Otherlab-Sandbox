@@ -1,5 +1,5 @@
 /*This is basically the same as effector_robot_1.cpp but there's a little more collision checking, look at 
-the validity checker. */ 
+the validity checker. If there's a function you can't find it's probably in RobotSystem.h */ 
 
 #include <ompl/base/spaces/SO2StateSpace.h>
 #include <ompl/geometric/planners/rrt/RRT.h>

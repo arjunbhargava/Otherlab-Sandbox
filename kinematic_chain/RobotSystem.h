@@ -51,7 +51,8 @@ namespace other {
 
 
 /*
-This class defines the meshes for the robot arms. Useful helper functions are defined in here as well. 
+This class defines the meshes for the robot arms. Useful helper functions are defined in here as well. Methods 
+are hopefully self explanatory, there's more comments in the RobotSystem.cpp file. 
 */
 class RobotSystem {
 
@@ -68,11 +69,11 @@ public:
 
 	struct System {
 		unsigned int stateDimension;
-		vector<link_t> axis_information;
-		Vector<real,3> initial_location;
-		Vector<real,3> target_position;
-		double initial_angle;
-		double tolerance;
+		vector<link_t> axis_information; //Rotation axis of the robot
+		Vector<real,3> initial_location; // Initial location of the mesh
+		Vector<real,3> target_position; // Target for the end effector
+		double initial_angle; //Relative to the origin
+		double tolerance; 
 		vector<Ref<TriMesh>> robotMesh;
 		vector<Ref<TriMesh>> obstacleMeshes;
 		vector<Ref<SimplexTree<Vector<real,3>,2>>> face_trees;
