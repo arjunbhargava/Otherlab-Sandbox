@@ -1,3 +1,6 @@
+/*This is basically the same as effector_robot_1.cpp but there's a little more collision checking, look at 
+the validity checker. */ 
+
 #include <ompl/base/spaces/SO2StateSpace.h>
 #include <ompl/geometric/planners/rrt/RRT.h>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
@@ -60,6 +63,9 @@ double lower_kr16_bounds [] = {-185, -65, -210, -165, -130, -350};
 vector<Vector<real,3>> samples; 
 Array<real> anglesFromState(const ob::State * state, RobotSystem* sys); 
 
+
+//The state space is changed here a little bit. In addition to the 6 SO2 spaces, we had a 7th dimension for time. The
+//RRT then tries to sample in time as well as configuration space. 
 class ChainSpace : public ob::CompoundStateSpace {
 
 	public: 
@@ -137,6 +143,11 @@ class SO26ValidityCheckerWP : public ob::StateValidityChecker
 			generate_mesh(joint_angles, 0, 0);
 			if(mesh_self_collisions_wrapper()) return false;
 
+
+//This is the only spot in the code thats' different. We need to get the timing of the sampling right, so this 
+//part of the code just makes sure that we're somewhere between two valid states so that when we line them up later
+//we don't introduce collisions. 
+			
 			const ChainSpace::StateType* cstate = static_cast<const ChainSpace::StateType*>(state);
 			double timestep = cstate->components[6]->as<ob::RealVectorStateSpace::StateType>()->values[0];
 			int upper = 0;
