@@ -1,10 +1,12 @@
 /* 
 This class handles the robot meshes for bike welding. The input parameters are specified in the constructor. 
-This makes it easier to handle/update the meshes/get the positions of the end effectorss
-
+This makes it easier to handle/update the meshes/get the positions of the end effectors. 
+Creting 2 robot meshes can be done much more easily, as the state of the robots is rememebred in this class. 
 */
 
 #include "RobotSystem.h"
+
+//Constructor: Intialize the mesh for the robot, and remember if there are any associated 
 
 other::RobotSystem::RobotSystem(unsigned int links, Array<Vector<real,3>> parsed_offsets, vector<Ref<TriMesh>> robotMesh, 
 		vector<Ref<TriMesh>> obstacleMeshes, double initial_angle, Vector<real, 3> initial_location, double effector_offset) 
@@ -22,12 +24,9 @@ other::RobotSystem::RobotSystem(unsigned int links, Array<Vector<real,3>> parsed
 		sys.face_trees.push_back(robotMesh[i]->face_tree());
 		sys.positions.push_back(sys.face_trees[i]->X.copy());
 	}
-
-	for(unsigned int i = 0; i < sys.obstacleMeshes.size(); i++) {
-		obstacle_trees.push_back(sys.obstacleMeshes[i]->face_tree());
-		obstacle_positions.push_back(obstacle_trees[i]->X.copy());
-	}
 }
+
+//Calculate the frame from any given set of angles.
 
 vector<Frame<Vector<real, 3>>> other::RobotSystem::frame_from_state(Array<real> state_angles) 
 {
@@ -50,12 +49,15 @@ vector<Frame<Vector<real, 3>>> other::RobotSystem::frame_from_state(Array<real> 
 	return frames;
 }
 
+
+//Initializes the axes, as in the constructor. Only useful once, this is what really differentiates the 2 meshes. 
 void other::RobotSystem::initializeAxes(Array<Vector<real,3>> offsets) 
 {
 	vector<link_t> axis_information;
 	Vector<real, 3> x_axis(1,0,0);
 	Vector<real, 3> y_axis(0,1,0);
 	Vector<real, 3> z_axis(0,0,1);
+
 	double upper_kr16_bounds [] = {185, 125, 64, 165, 130, 350};
 	double lower_kr16_bounds [] = {-185, -65, -210, -165, -130, -350};
 
@@ -85,6 +87,7 @@ void other::RobotSystem::initializeAxes(Array<Vector<real,3>> offsets)
 }
 
 
+//Updates the mesh to the given state by updating the face tree associated with that robot. 
 void other::RobotSystem::update_mesh(Array<real> joint_angles) 
 {
 	vector<Frame<Vector<real,3>>> frames = frame_from_state(joint_angles);
@@ -95,6 +98,7 @@ void other::RobotSystem::update_mesh(Array<real> joint_angles)
 	}
 }
 
+//Finds the effector position for the given robot. 
 Vector<real,3> other::RobotSystem::effectorPositions(Array<real> joint_angles)
 {
 	vector<Frame<Vector<real,3>>> link_frames =	frame_from_state(joint_angles);

@@ -14,8 +14,13 @@ def scatter_points(anglepath):
 		xs.append(val[0])
 		ys.append(val[1])
 		zs.append(val[2])
-			
-	ax.scatter(xs, ys, zs, c = 'r', marker = 'o')
+		if i%3 == 0:
+			ax.scatter(xs[i], ys[i], zs[i], c = 'r', marker = 'o')
+		elif i%3 == 1:
+			ax.scatter(xs[i], ys[i], zs[i], c = 'g', marker = 'o')
+		if i%3 == 2:
+			ax.scatter(xs[i], ys[i], zs[i], c = 'b', marker = 'o')
+
 	ax.set_xlabel('X Label')
 	ax.set_ylabel('Y Label')
 	ax.set_zlabel('Z Label')

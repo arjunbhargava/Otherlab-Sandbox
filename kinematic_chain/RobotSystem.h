@@ -48,6 +48,11 @@ using std::string;
 
 namespace other {
 
+
+
+/*
+This class defines the meshes for the robot arms. Useful helper functions are defined in here as well. 
+*/
 class RobotSystem {
 
 
@@ -88,9 +93,32 @@ public:
 		return sys.face_trees;
 	}
 
-	int getStateDimension() 
+	vector<Ref<TriMesh>> getObstacleMeshes() {
+		return sys.obstacleMeshes;
+	}
+
+	unsigned int getStateDimension() 
 	{
 		return sys.stateDimension;
+	}
+
+	Vector<real,3> getTargetPosition() {
+		return sys.target_position;
+	}
+
+	double getEffectorOffset() {
+		return sys.effector_offset;
+	}
+
+	vector<link_t> getAxisInformation() {
+		return sys.axis_information;
+	}
+
+
+
+	void setTargetPosition(Vector<real,3> target) 
+	{
+		sys.target_position = target;
 	}
 
 	Vector<real,3> effectorPositions(Array<real> joint_angles);
@@ -99,10 +127,7 @@ public:
 private:
 
 	void initializeAxes(Array<Vector<real,3>> parsed_offsets);
-
 	System sys;
-	vector<Ref<SimplexTree<Vector<real,3>,2>>> obstacle_trees;
-	vector<Array<Vector<real, 3>>> obstacle_positions;
 
 };
 }

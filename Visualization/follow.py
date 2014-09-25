@@ -22,7 +22,7 @@ def getContours():
   touch = 'pts.txt'
   contours = [ [float(i) for i in l.strip().split(' ')] for l in open(touch)]  
   for i, val in enumerate(contours):
-  #  contours[i] = contours[i] + array([0, 0,-300])
+    contours[i] = contours[i] + array([-100, 0,-300])
     contours[i] = Rotation.from_angle_axis(pi/2, [0, 0 , 1]) * contours[i]
     contours[i] = Rotation.from_angle_axis(-pi/2, [0, 1, 0]) * contours[i]
 
@@ -34,7 +34,7 @@ def get_origins():
 def bike_mesh():
   bike = TriMesh()
   bike.read("bike_mesh.om")
-  #bike.translate(array([0, 0, -300]))
+  bike.translate(array([-100, 0, -300]))
   bike.set_X(Rotation.from_angle_axis(pi/2, [0, 0, 1]) * bike.X())
   bike.request_face_normals()
   bike.request_vertex_normals()
@@ -145,7 +145,9 @@ class Arm(object):
 
   @cache_method
   def effectors(self):
-    return [  f(self.nodes[-1]) for f in self.effector_functions]
+    print [  f(self.nodes[-1]) for f in self.effector_functions]
+    exit(0)
+    return
 
   @cache_method
   def mesh(self):
@@ -339,21 +341,37 @@ class System():
         close_point = bikeft.closest_point(p, 200)
         p = close_point[0]
         normal = this_bike.smooth_normal(close_point[1], close_point[2])
-        normals.append(normal)
+      # #  normal = list(normal)
+        normal2 = [0, 0, 0]
+        principal = list(abs(normal)).index(max(abs(normal)))
+      #  print "normal :", normal, "principal :", principal
+        if principal == 0:
+          normal2 = normalized(array([0, 0, 1]))#normalized(abs(asarray(normal2)))
+        else:
+          normal2[principal] = normal[principal]
+          normal2 = normalized(normal2)
+
+
+        print principal, normal, normal2
+        print "----------------"
+       # print normal
+        # if normal[0] > 0 and normal[1] > 0:
+        #   normal = array([1, 0, ])
         rotation_axis = cross(normal, [0, 0, 1])      
         rotation_angle = acos(clamp(dot([0,0, 1], normal), -1, 1))
         rotation_axes.append(rotation_axis)
         rotation_angles.append(rotation_angle)
-        print normals[i]
-        if rotation_angle > pi/2:
-          target_axes.append(array([0,0,-1]))
-   #       normals[i] = Rotation.from_angle_axis(pi - rotation_angle, -rotation_axis) * array([0, 0, 1])
-        else: 
-          target_axes.append(array([0,0,1]))
-    #      normals[i] = Rotation.from_angle_axis(rotation_angle, rotation_axis) * array([0, 0, 1])
-       # points[i] =  Rotation.from_angle_axis(rotation_angle, rotation_axis) * p;
-       # print i, rotation_angles[i], normals[i]
+        target_axes.append(Rotation.from_angle_axis(rotation_angle, rotation_axis) * array([0, 0, 1]))
+        normals.append(Rotation.from_angle_axis(rotation_angle, rotation_axis) * normal)
 
+        # if normal[2] > 0:
+        #   target_axes.append(array([0, 0, 1]))
+        # else: 
+        #   target_axes.append(array([0, 0 , -1]))
+          
+        # rotation_angle = acos(clamp(dot(array([0, 0, 1]), target_axes[i]), -1, 1))
+        # rotation_axis = cross(array([0, 0, 1]), target_axes[i])
+        # normals.append(Rotation.from_angle_axis(rotation_angle, rotation_axis) * normal)
     return points, rotation_axes, rotation_angles, target_axes, normals
 
 
